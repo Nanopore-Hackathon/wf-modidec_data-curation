@@ -1,4 +1,4 @@
-# wf-modidec_part1_data-curation
+# wf-ModiDeC (Part 1: data curation)
 
 ## Introduction
 In this directory you find part 1 of the code from ModiDec. The scripts located in ./bin facilitate the data curation. ...
