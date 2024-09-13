@@ -1,8 +1,12 @@
+
+# ////////////////////////////////////////////////////////////////////////////////////////////
+# DO NOT CHANGE ANYTHING IN THIS FILE !!!
+# ////////////////////////////////////////////////////////////////////////////////////////////
+
 import pod5
 from remora import io , refine_signal_map, util
 import os
 import numpy as np
-
 
 def Remora_resquigle_Generation_data(data_path, bam_file, level_table_file, save_path, Variables, variables_segmentation, Indexes, mod_dictionary, ind_loop):
 

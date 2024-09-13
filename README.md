@@ -8,22 +8,42 @@ Below is a graphical overview of suggested routes through the pipeline depending
 
 [image]
 
+## Issues to be fixed
+- Solving conda environment failed on MacOS M1
+- 
+
+## Questions: 
+- How does the matching between the pod5 and the bam file work? Based on name? if so on which part of the name? etc.
+
+
 ## Quick Start
 Test run the code:
 
 1. Install [`Miniconda`](https://conda.io/miniconda.html)
 
 2. Download the pipeline from Github
+    ```bash
+    git clone https://github.com/Nanopore-Hackathon/wf-modidec_data-curation.git
+    ```
 
-3. Start running the data curation by using the following command 
+3. Install and activate conda environemnt
+    ```bash
+    conda env create -f ./envs/remora_TF2_env.yml
+    conda activate remora_TF2
+    ```
+
+4. Start running the data curation by using the following command 
+    ```bash
+    python ./bin/Resquigle_remora_GUI.py
+    ```
 
 
 ## Hackathone Tasks
 Key aim: Convert the scripts into a Nextflow pipleine compatible with Epi2Me.
 
+Main Tasks: 
 1. Get your system up and ready
     - Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=23.10.0`)
-    - Install [`Miniconda`](https://conda.io/miniconda.html)
 
     - Install [`Docker`](https://conda.io/miniconda.html)
 
