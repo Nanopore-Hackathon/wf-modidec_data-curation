@@ -38,7 +38,7 @@ Key aim: Convert the scripts into a Nextflow pipeline compatible with Epi2Me.
     - Open Epi2Me and check if the repository occurs in the workflow section  
 
 
-5. Test and debug pipeline in Epi2Me using test data
+4. Test and debug pipeline in Epi2Me using test data
 
 ## Credits & License
 
