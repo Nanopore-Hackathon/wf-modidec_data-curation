@@ -8,57 +8,37 @@ Below is a graphical overview of suggested routes through the pipeline depending
 
 [image]
 
-## Issues to be fixed
-- Solving conda environment failed on MacOS M1
-- 
 
-## Questions: 
-- How does the matching between the pod5 and the bam file work? Based on name? if so on which part of the name? etc.
+## Guideline
+Key aim: Convert the scripts into a Nextflow pipeline compatible with Epi2Me.
 
-
-## Quick Start
-Test run the code:
-
-1. Install [`Miniconda`](https://conda.io/miniconda.html)
-
-2. Download the pipeline from Github
-    ```bash
-    git clone https://github.com/Nanopore-Hackathon/wf-modidec_data-curation.git
-    ```
-
-3. Install and activate conda environemnt
-    ```bash
-    conda env create -f ./envs/remora_TF2_env.yml
-    conda activate remora_TF2
-    ```
-
-4. Start running the data curation by using the following command 
-    ```bash
-    python ./bin/Resquigle_remora_GUI.py
-    ```
-
-
-## Hackathone Tasks
-Key aim: Convert the scripts into a Nextflow pipleine compatible with Epi2Me.
-
-Main Tasks: 
 1. Get your system up and ready
     - Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=23.10.0`)
-
+    - Install [`Miniconda`](https://conda.io/miniconda.html)
     - Install [`Docker`](https://conda.io/miniconda.html)
-
     - Install [`Epi2Me Desktop`](https://labs.epi2me.io) (v5.1.14 or later)
-
     - Clone the Github repository (we recommend the GitHub Desktop client)
 
+
 2. Translate the functions and logic into Nextflow processes and ultimately a Nextflow pipeline
+    - Please check the repository and README.md of wf-modidec_analysis to get some hints about the synthax and folder structure of an Epi2Me workflow
+    - Extract the variables that will be needed to run data curation (have a look at ./bin/Resquigle_remora_GUI.py)
+    - Define a set of variable names that will occur in all the scripts (e.g. nextflow_schema.json, ./bin/Resquigle_remora_GUI.py)
+    - Remove GUI features from ./bin/Resquigle_remora_GUI.py and implement a script that can be started via command line tool. We recommend implementing an argparser. (Check the argparser in wf-modidec_analysis/bin)
+    - Implement a process in main.nf, that takes all necessary variables as input and starts the changed ./bin/Resquigle_remora_GUI.py script. Check which files you want to write to the filesystem and define them in the output section. Define a PublishDir to write the output files to your filesystem. Assign the label modidec to the process.
+    - Implement a workflow in main.nf which calls the defined process and assign the right input variables to it.
+    - Define a test config.yaml file to test the code without running it in Epi2Me. Take the config.yaml of the wf-modidec_analysis repository as template. 
+    - In nextflow.config assign a label to the Docker container "stegiopast/modidec:latest" to enable the modidec label feature. (check wf-modidec_analysis/nextflow.config) 
+    - Test if the pipeline runs through, when starting it via console. (nextflow run main.nf -params-file config.yaml) Test data can be found in folder ./bin/data/
 
-3. Convert the GUI into nextflow_schema.json format
+3. Convert the GUI into nextflow_schema.json format for Epi2Me integration
+    - Define the datatype and description for each variable that needs to be taken as input for the nextflow pipeline.
+    - make epi2melabs/workflows/modidec directory 
+    - Copy the wf-modidec_training repository into epi2melabs/workflows/modidec
+    - Open Epi2Me and check if the repository occurs in the workflow section  
 
-4. Containerise and deploy the Coda evenvirnemnet using Docker
 
 5. Test and debug pipeline in Epi2Me using test data
-
 
 ## Credits & License
 
