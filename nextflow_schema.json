@@ -130,7 +130,42 @@
             "fa_icon": "fas fa-arrow-right",
             "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
             "properties" : {
-               
+                "batch_size": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":16,
+                    "description": "Updated by Nicolo"
+                },
+                "max_seq_length": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":40,
+                    "description": "Updated by Nicolo"
+                },
+                "chunk_length": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":400,
+                    "description": "Updated by Nicolo"
+                },
+                "time_shift": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":25,
+                    "description": "Updated by Nicolo"
+                },
+                "start_read_num": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":0,
+                    "description": "Updated by Nicolo"
+                },
+                "end_read_num": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":1000,
+                    "description": "Updated by Nicolo"
+                }
             }
         }
     },
