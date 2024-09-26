@@ -12,6 +12,9 @@ def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, sav
 
     ind_loop = 0
     for bam_file in bam_files:
+
+        bam_file = bam_folder + "/" + bam_file
+
         #initial variable
         basecalling = Variables[0]
         mod_mapping = Varaibles[1]
@@ -292,3 +295,4 @@ def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, sav
                     print("resquigle error")
         ind_loop += 1
             
+    print("Resquggle Finished")
