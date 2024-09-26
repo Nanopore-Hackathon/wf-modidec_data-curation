@@ -25,10 +25,16 @@ process Resquiggle_Remora {
         path("$params.outdir/*.npz"), emit:save_path
     script:
         //This block will create a variable containing a comma separated list from the input variables
-        def general_variables = [modified_data, use_modified_region, training_out, mod_type, mod_pos, bases_before_mod, mod_dict].join(',')
-        def segmentation_variables = [batch_size, max_seq_length, chunck_length, time_shift,start_read_number, end_read_number].join(',')
+        def general_variables = [modified_data, use_modified_region, training_out, mod_type, mod_pos, bases_before_mod, mod_dict]
+        def segmentation_variables = [batch_size, max_seq_length, chunck_length, time_shift,start_read_number, end_read_number]
         
-        python bin 'Resquiggle_remora.py --{$pod5_files} --{$bam_files} --{$kmer_lvl_table} --{$general_variables} --{$segmentation_variables}'
+        """
+        echo $params.mod_dict
+        echo $general_variables
+        Resquiggle_remora.py --pod5_dir $pod5_files --bam_files $bam_files \
+            --kmer_lvl_table $kmer_lvl_table --training_params $general_variables \
+            --segmentation_params $segmentation_variables 
+        """
 
     stub:
     """
