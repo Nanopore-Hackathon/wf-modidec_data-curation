@@ -27,25 +27,17 @@
                     "title": "Bam File Input Directory",
                     "description": "Input directory of bam files"
                 },
-                "run_name":{
-                    "type": "string",
-                    "title": "Run Name",
-                    "description": "Title of Sequencing Run for Generation of Output Files"
-                },
                 "kmer_lvl_table": {
-                    "type": "number",
-                    "title": "KMER Lvl Table",
-                    "default":5,
-                    "description": "",
-                    "exclusiveMaximum":6,
-                    "exclusiveMinimum":3
+                    "type": "string",
+                    "format": "path",
+                    "title": "KMER-level table file",
+                    "description": "should be RNA004 or RNA002 and link to a hardcode path to the ONT website https://github.com/nanoporetech/kmer_models"
                 },
                 "outdir": {
                     "type": "string",
                     "format": "path",
-                    "title": "Output Directory",
-                    "default": "output",
-                    "description": "This should be a directory to store the output"
+                    "title": "Save Path",
+                    "description": "This is the directory where the output gets saved"
                 }
             }
         },
@@ -57,64 +49,58 @@
             "properties": {
                 "mod_mapping": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "title": "Mofication Mapping",
-                    "description": "Updated by nicolo"
+                    "description": "Mofication Mapping or Basecalling?"
                 },
                 "basecalling": {
                     "type": "boolean",
                     "default": false,
                     "title": "Basecalling",
-                    "description": "Updated by nicolo"
+                    "description": "Mofication Mapping or Basecalling?"
                 },
                 "modified_data": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "Modified Data - IDK what this means",
-                    "description": "Updated by nicolo"
+                    "default": true,
+                    "title": "Modified Data",
+                    "description": "Do the reads contain modified bases or not?"
                 },
                 "use_modified_region": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "use_modified_region - IDK what this means",
-                    "description": "Updated by nicolo"
+                    "default": true,
+                    "title": "Use Modified Region",
+                    "description": "Will create chucks around modification position"
                 },
                 "training_out":{
                     "type": "string",
-                    "format": "path",
+                    "format": "string",
                     "title": "Training Output Directory",
                     "default": "modified_data",
-                    "description": "Updated by Nicolo"
-                },
-                "save_long_reads": {
-                    "type": "boolean",
-                    "default": false,
-                    "title": "Save Long Reads",
-                    "description": "Updated by nicolo"
+                    "description": "Name of the output file"
                 },
                 "mod_type": {
                     "type": "string",
                     "title": "Modification Type",
-                    "default": "5mC",
-                    "description": "Updated by Nicolo"
+                    "default": "M",
+                    "description": "A letter linked to modification dictionary"
                 },
-                "mod_pos": {
-                    "type": "number",
+              	"mod_pos": {
+                    "type": "integer",
                     "title": "Location of Modification",
-                    "default":50,
-                    "description": "Updated by Nicolo"
+                    "default":92,
+                    "description": "Position of the modification in the reference sequence (int)"
                 },
                 "bases_before_mod": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "Number of Bases before Modification",
-                    "description": "Updated by Nicolo",
+                    "description": "If you want you can take more bases to the left or right from your modification position (int)",
                     "default": 0
                 },
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{}",
-                    "description": "Updated by Nicolo"
+                    "default": "{\"G\":2, \"M\":3, \"I\":4, \"P\":5}",
+                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 }
             }
         },
@@ -125,43 +111,57 @@
             "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
             "properties" : {
                 "batch_size": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Batch size",
                     "default":16,
-                    "description": "Updated by Nicolo"
+                    "description": "Number of chunks saved per file (int)"
                 },
                 "max_seq_length": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Maximum sequence length",
                     "default":40,
-                    "description": "Updated by Nicolo"
+                    "description": "Maximum number of base that a chunk can have (int)"
                 },
                 "chunk_length": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Number of chunks",
                     "default":400,
-                    "description": "Updated by Nicolo"
+                    "description": "Defines how many timepoints to inlude within a sliding window (int)"
                 },
                 "time_shift": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Time shift",
                     "default":25,
-                    "description": "Updated by Nicolo"
+                    "description": "How many timepoint to shift your sliding window to create annew represntation of the modification chunk (int)"
                 },
                 "start_read_num": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "To update",
                     "default":0,
-                    "description": "Updated by Nicolo"
+                    "description": "Select the start entry from the bam file (int)"
                 },
                 "end_read_num": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "To update",
                     "default":1000,
-                    "description": "Updated by Nicolo"
+                    "description": "Select the end entry from the bam file(int)"
                 }
             }
-        }
+        },
+        "test": { 
+            "title": "Segmentation Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
+            "properties" : {
+                "test_file": {
+                    "type": "integer",
+                    "title": "Batch size",
+                    "default":16,
+                    "description": "Number of chunks saved per file (int)"
+                }
+            }
+
     },
     "allOf": [
         {
@@ -172,6 +172,9 @@
         },
         {
             "$ref": "#/definitions/Segmentation_Params"
+        },
+        {
+            "$ref": "#/definitions/test"
         }
     ],
     "resources": {
