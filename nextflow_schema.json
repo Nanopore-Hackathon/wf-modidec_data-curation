@@ -1,4 +1,8 @@
 {
+
+
+
+
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",    
     "title": "wf-modidec_data-curation",
@@ -27,25 +31,17 @@
                     "title": "Bam File Input Directory",
                     "description": "Input directory of bam files"
                 },
-                "run_name":{
-                    "type": "string",
-                    "title": "Run Name",
-                    "description": "Title of Sequencing Run for Generation of Output Files"
-                },
                 "kmer_lvl_table": {
-                    "type": "number",
-                    "title": "KMER Lvl Table",
-                    "default":5,
-                    "description": "",
-                    "exclusiveMaximum":6,
-                    "exclusiveMinimum":3
+                    "type": "string",
+                    "format": "path",
+                    "title": "KMER-level table file",
+                    "description": "should be RNA004 or RNA002 and link to a hardcode path to the ONT website https://github.com/nanoporetech/kmer_models"
                 },
                 "outdir": {
                     "type": "string",
                     "format": "path",
-                    "title": "Output Directory",
-                    "default": "output",
-                    "description": "This should be a directory to store the output"
+                    "title": "Save Path",
+                    "description": "This is the directory where the output gets saved"
                 }
             }
         },
@@ -57,46 +53,40 @@
             "properties": {
                 "mod_mapping": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "title": "Mofication Mapping",
-                    "description": "Updated by nicolo"
+                    "description": "Mofication Mapping or Basecalling?"
                 },
                 "basecalling": {
                     "type": "boolean",
                     "default": false,
                     "title": "Basecalling",
-                    "description": "Updated by nicolo"
+                    "description": "Mofication Mapping or Basecalling?"
                 },
                 "modified_data": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "Modified Data - IDK what this means",
-                    "description": "Updated by nicolo"
+                    "default": true,
+                    "title": "Modified Data",
+                    "description": "Do the reads contain modified bases or not?"
                 },
                 "use_modified_region": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "use_modified_region - IDK what this means",
-                    "description": "Updated by nicolo"
+                    "default": true,
+                    "title": "Use Modified Region",
+                    "description": "Will create chucks around modification position"
                 },
                 "training_out":{
                     "type": "string",
-                    "format": "path",
+                    "format": "string",
                     "title": "Training Output Directory",
                     "default": "modified_data",
-                    "description": "Updated by Nicolo"
-                },
-                "save_long_reads": {
-                    "type": "boolean",
-                    "default": false,
-                    "title": "Save Long Reads",
-                    "description": "Updated by nicolo"
+                    "description": "Name of the output file"
                 },
                 "mod_type": {
                     "type": "string",
                     "title": "Modification Type",
-                    "default": "5mC",
-                    "description": "Updated by Nicolo"
+                    "default": "M",
+                    "description": "A letter linked to modification dictornary"
                 },
                 "mod_pos": {
                     "type": "number",
