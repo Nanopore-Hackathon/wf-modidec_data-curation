@@ -147,21 +147,7 @@
                     "description": "Select the end entry from the bam file(int)"
                 }
             }
-        },
-        "test": { 
-            "title": "Segmentation Parameters",
-            "type": "object",
-            "fa_icon": "fas fa-arrow-right",
-            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
-            "properties" : {
-                "test_file": {
-                    "type": "integer",
-                    "title": "Batch size",
-                    "default":16,
-                    "description": "Number of chunks saved per file (int)"
-                }
-            }
-
+        }
     },
     "allOf": [
         {
