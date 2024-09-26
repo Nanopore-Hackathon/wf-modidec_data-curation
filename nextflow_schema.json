@@ -29,9 +29,13 @@
                 },
                 "kmer_lvl_table": {
                     "type": "string",
-                    "format": "path",
-                    "title": "KMER-level table file",
-                    "description": "should be RNA004 or RNA002 and link to a hardcode path to the ONT website https://github.com/nanoporetech/kmer_models"
+                    "title": "Flowcell Type",
+                    "default": "RNA004",
+                    "description": "Select the RNA flowcell type you have generated your data with",
+                    "enum": [
+                        "RNA004",
+                        "RNA002"
+                    ]
                 },
                 "outdir": {
                     "type": "string",
@@ -47,18 +51,6 @@
             "fa_icon": "fas fa-arrow-right",
             "description": "Detailed Options Relevant to Training",
             "properties": {
-                "mod_mapping": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "Mofication Mapping",
-                    "description": "Mofication Mapping or Basecalling?"
-                },
-                "basecalling": {
-                    "type": "boolean",
-                    "default": false,
-                    "title": "Basecalling",
-                    "description": "Mofication Mapping or Basecalling?"
-                },
                 "modified_data": {
                     "type": "boolean",
                     "default": true,
@@ -81,7 +73,7 @@
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{\"G\":2, \"M\":3, \"I\":4, \"P\":5}",
+                    "default": "{\"B\":2, \"M\":3, \"I\":4, \"P\":5}",
                     "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 },
                 "mod_type": {
