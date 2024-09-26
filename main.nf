@@ -22,23 +22,28 @@ println """\
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 // include { process_name } from "process_file"
-include { Resequiggle_Remora } from "./bin/process.nf"
+// include { Resequiggle_Remora } from "./bin/process.nf"
 
-WorkflowMain.initialise(workflow, params, log)
+// WorkflowMain.initialise(workflow, params, log)
 
 
 workflow {
 
-    Pinguscript.ping_start(nextflow, workflow, params)
+    //Pinguscript.ping_start(nextflow, workflow, params)
 
-    Resquiggle_Remora(inputs)
+    print("Works")
+    // Resquiggle_Remora(inputs)
 
+}
+
+workflow.onError {
+    //Pinguscript.ping_error(nextflow, workflow, params)
 }
 
 workflow.onComplete {
     println "Analysis Complete at: $workflow.complete"
     println "Execution Status: ${ workflow.success ? 'OK' : 'failed' }"
-    println "Location of Output: ${ params.outdir }"
+    println "Location of Output: ${ params.out_dir }"
 
-    Pinguscript.ping_complete(nextflow, workflow, params)
+    //Pinguscript.ping_complete(nextflow, workflow, params)
 }
