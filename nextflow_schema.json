@@ -86,25 +86,25 @@
                     "type": "string",
                     "title": "Modification Type",
                     "default": "M",
-                    "description": "A letter linked to modification dictornary"
+                    "description": "A letter linked to modification dictionary"
                 },
-                "mod_pos": {
-                    "type": "number",
+              	"mod_pos": {
+                    "type": "integer",
                     "title": "Location of Modification",
-                    "default":50,
-                    "description": "Updated by Nicolo"
+                    "default":92,
+                    "description": "Position of the modification in the reference sequence (int)"
                 },
                 "bases_before_mod": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "Number of Bases before Modification",
-                    "description": "Updated by Nicolo",
+                    "description": "If you want you can take more bases to the left or right from your modification position (int)",
                     "default": 0
                 },
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{}",
-                    "description": "Updated by Nicolo"
+                    "default": "{"G":2, "M":3, "I":4, "P":5}",
+                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 }
             }
         },
@@ -115,40 +115,40 @@
             "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
             "properties" : {
                 "batch_size": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Batch size",
                     "default":16,
-                    "description": "Updated by Nicolo"
+                    "description": "Number of chunks saved per file (int)"
                 },
                 "max_seq_length": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Maximum sequence length",
                     "default":40,
-                    "description": "Updated by Nicolo"
+                    "description": "Maximum number of base that a chunk can have (int)"
                 },
                 "chunk_length": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Number of chunks",
                     "default":400,
-                    "description": "Updated by Nicolo"
+                    "description": "Defines how many timepoints to inlude within a sliding window (int)"
                 },
                 "time_shift": {
-                    "type": "number",
-                    "title": "To update",
+                    "type": "integer",
+                    "title": "Time shift",
                     "default":25,
-                    "description": "Updated by Nicolo"
+                    "description": "How many timepoint to shift your sliding window to create annew represntation of the modification chunk (int)"
                 },
                 "start_read_num": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "To update",
                     "default":0,
-                    "description": "Updated by Nicolo"
+                    "description": "Select the start entry from the bam file (int)"
                 },
                 "end_read_num": {
-                    "type": "number",
+                    "type": "integer",
                     "title": "To update",
                     "default":1000,
-                    "description": "Updated by Nicolo"
+                    "description": "Select the end entry from the bam file(int)"
                 }
             }
         }
