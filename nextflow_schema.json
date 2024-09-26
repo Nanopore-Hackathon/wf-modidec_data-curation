@@ -110,12 +110,6 @@
                     "description": "Updated by Nicolo",
                     "default": 0
                 },
-                "bases_after_mod": {
-                    "type": "number",
-                    "title": "Number of Bases After Modification",
-                    "description": "Updated by Nicolo",
-                    "default": 0
-                },
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
