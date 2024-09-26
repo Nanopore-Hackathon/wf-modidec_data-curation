@@ -24,16 +24,32 @@ process Resquiggle_Remora {
     output:
         path("$params.outdir/*.npz"), emit:save_path
     script:
-        //This block will create a variable containing a comma separated list from the input variables
-        def general_variables = [modified_data, use_modified_region, training_out, mod_type, mod_pos, bases_before_mod, mod_dict]
-        def segmentation_variables = [batch_size, max_seq_length, chunck_length, time_shift,start_read_number, end_read_number]
+        // This block will create a variable containing a comma separated list from the input variables
+        // def general_variables = [modified_data, use_modified_region, training_out, mod_type, mod_pos, bases_before_mod, mod_dict]
+        // def segmentation_variables = [batch_size, max_seq_length, chunck_length, time_shift, start_read_number, end_read_number]
         
         """
         echo $params.mod_dict
         echo $general_variables
-        Resquiggle_remora.py --pod5_dir $pod5_files --bam_files $bam_files \
-            --kmer_lvl_table $kmer_lvl_table --training_params $general_variables \
-            --segmentation_params $segmentation_variables 
+        Resquiggle_remora.py \
+            --pod5_dir $pod5_files \
+            --bam_files $bam_files \
+            --kmer_lvl_table $kmer_lvl_table \
+
+            --basecalling $??? \
+            --mod_mapping $mod_dict \
+            --modified_data $modified_data \
+            --take_mod_region $use_modified_data \
+            --name_save_file $training_out \
+            --modified_base $mod_type \
+            --mod_pos_initial $mod_pos \
+            --start_base_resquigle $??? \
+
+            --batch_size $batch_size \
+            --max_label_length $max_seq_length \
+            --time_segment $chunk_length \
+            --shift $time_shift
+            
         """
 
     stub:
