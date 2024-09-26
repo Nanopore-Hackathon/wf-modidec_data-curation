@@ -99,7 +99,7 @@
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{"G":2, "M":3, "I":4, "P":5}",
+                    "default": '{"G":2, "M":3, "I":4, "P":5}',
                     "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 }
             }
