@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 # ////////////////////////////////////////////////////////////////////////////////////////////
 # DO NOT CHANGE ANYTHING IN THIS FILE !!!
 # ////////////////////////////////////////////////////////////////////////////////////////////
@@ -7,29 +7,47 @@ import pod5
 from remora import io , refine_signal_map, util
 import os
 import numpy as np
+import argparse
 
-def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, save_path, Variables, variables_segmentation, Indexes, mod_dictionary):
+def argparser():
+    parser = argparse.ArgumentParser(description="Parser for pod5Viewer input parameters")
+
+    # Required Input
+    parser.add_argument("--bam_file_dir", required=True, type=str, help="Path to the BAM files")
+    parser.add_argument("--pod5_dir", required=True, type=str, help="Path to the pod5 directory")
+    parser.add_argument("--kmer_lvl_table", required=True, type=str, help="Path to the kmer level table")
+    
+    parser.add_argument("--basecalling", required=True, type=bool)
+    parser.add_argument("--mod_mapping", required=True, type=bool)
+    parser.add_argument("--modified_data", required=True, type=bool)
+    parser.add_argument("--take_mod_region", required=True, type=bool)
+    parser.add_argument("--name_save_file", required=True, type=str)
+    parser.add_argument("--modified_base", required=True, type=str, nargs="+")
+    parser.add_argument("--mod_pos_initial", required=True, type=int)
+    parser.add_argument("--start_base_resquigle", required=True, type=int)
+
+    parser.add_argument("--batch_size", required=True, type=int)
+    parser.add_argument("--max_label_length", required=True, type=int)
+    parser.add_argument("--time_segment", required=True, type=int)
+    parser.add_argument("--shift", required=True, type=int)
+
+    parser.add_argument("--mod_list", required=True, nargs="+")
+
+    return parser
+
+def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, save_path, \
+    basecalling, mod_mapping, modified_data, take_mod_region, name_Save_file, Modified_base, \
+    mod_pos_initial, start_base_resquigle, batch_size, max_label_length, time_segment, shift, \
+    start_index, end_index, mod_dictionary):
 
     ind_loop = 0
-    
+    bam_files = os.listdir(bam_file_dir)
+    print(bam_files)
+
     for bam_file in bam_files:
         bam_file = bam_folder + "/" + bam_file
 
         #initial variable
-        basecalling = Variables[0]
-        mod_mapping = Varaibles[1]
-        modified_data = Variables[2]
-        take_mod_region = Variables[3]
-        name_save_file = Variables[4]
-        Modfied_base = Variables[5]
-        mod_pos_initial = Variables[6]
-        start_base_resquigle = Variables[7]
-
-        #second variable for chunk size creations
-        batch_size = variables_segmentation[0]
-        max_label_length = variables_segmentation[1]
-        time_segment = variables_segmentation[2]
-        shift = variables_segmentation[3]
 
         # /////// read the files //////
 
@@ -55,12 +73,11 @@ def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, sav
         if basecalling:
             labels = 4
 
-        start_Index = Indexes[0]
+        curent_index = start_index
+        for name_id in read_id[start_index: end_index]: #need to find a way to choose the ids.
 
-        for name_id in read_id[Indexes[0]: Indexes[1]]: #need to find a way to choose the ids.
-
-            start_Index += 1
-            print(start_Index)
+            curent_index += 1
+            print(curent_index)
             seq_resquigle = ""
             position_adjusting = 0
             Error_read = False
@@ -283,7 +300,7 @@ def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, sav
                                 train2_batch[m] = train2_for_batch
                                 output_batch[m] = output_for_batch
 
-                        file_name = name_save_file + f"{int(ind_loop)}_{int(start_Index)}" + f"_{n}.npz"
+                        file_name = name_save_file + f"{int(ind_loop)}_{int(current_index)}" + f"_{n}.npz"
                         np.savez_compressed(os.path.join(save_path,file_name), 
                                                 train_input = train1_batch,
                                                 train_input2 = train2_batch,
@@ -296,3 +313,11 @@ def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, sav
         ind_loop += 1
             
     print("Resquggle Finished")
+
+if __name__ == "__main__":
+    args = argparser().parse_args()
+    print(args)
+    print(args.bam_file_dir)
+    print(args.mod_list)
+
+    #main(args)

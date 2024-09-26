@@ -13,73 +13,22 @@ def get_parser() -> argparse.ArgumentParser:
     required_input.add_argument("--bam_files", required=True, type=str, help="Path to the BAM files")
     required_input.add_argument("--kmer_lvl_table", required=True, type=str, help="Path to the kmer level table")
     
-    required_input.add_argument("--basecalling")
-    required_input.add_argument("--mod_mapping")
-    required_input.add_argument("--modified_data")
-    required_input.add_argument("--take_mod_region")
-    required_input.add_argument("--name_save_file")
-    required_input.add_argument("--modified_base")
-    required_input.add_argument("--mod_pos_initial")
-    required_input.add_argument("--start_base_resquigle")
+    required_input.add_argument("--basecalling", required=True, type=bool)
+    required_input.add_argument("--mod_mapping", required=True, type=bool)
+    required_input.add_argument("--modified_data", required=True, type=bool)
+    required_input.add_argument("--take_mod_region", required=True, type=bool)
+    required_input.add_argument("--name_save_file", required=True, type=str)
+    required_input.add_argument("--modified_base", required=True, type=str, nargs="+")
+    required_input.add_argument("--mod_pos_initial", required=True, type=int)
+    required_input.add_argument("--start_base_resquigle", required=True, type=int)
 
-    required_input.add_argument("--batch_size")
-    required_input.add_argument("--max_label_length")
-    required_input.add_argument("--time_segment")
-    required_input.add_argument("--shift")
-    
-    #required_input.add_argument("--index", required=True, type=int, help="Current index of the bam file")
-
-    # Data for Training (grouped under a single flag with multiple values)
-    training_group = parser.add_argument_group("Data for Training", "Parameters related to training the model")
-    training_group.add_argument("--training_params", help="""
-        Parameters related to training, in order:
-            basecalling (bool), 
-            mod_mapping (bool), 
-            modified_data (bool), 
-            use_modified_region (bool), 
-            training_out (str), 
-            mod_type (str), 
-            mod_pos (int), 
-            bases_before_mod (int), 
-            mod_dict (str)
-    """)
-    print(training_group)
-
-
-    # Segmentation Parameters (grouped under a single flag with multiple values)
-    segmentation_group = parser.add_argument_group("Segmentation Params", "Parameters related to data segmentation")
-    segmentation_group.add_argument("--segmentation_params", help="""
-        Parameters related to segmentation, in order:
-        batch_size (int), 
-        max_seq_length (int), 
-        chunk_length (int), 
-        time_shift (int), 
-        start_read_num (int), 
-        end_read_num (int)
-    """)
+    required_input.add_argument("--batch_size", required=True, type=int)
+    required_input.add_argument("--max_label_length", required=True, type=int)
+    required_input.add_argument("--time_segment", required=True, type=int)
+    required_input.add_argument("--shift", required=True, type=int)
 
     return parser
 
-def mod_str_to_mod_dict(mod_str: str) -> Dict[str, int]:
-    """
-    Parses the given mod_dict string to a proper python dict.
-
-    Params:
-        mod_str (str): Given mod_dict input
-    
-    Returns:
-        Dict[str, int]: Dict with each mod as key and ints as corresponding indices
-    """
-    mod_str = mod_str.replace("{", "").replace("}", "").replace('"', "")
-    mod_dict = {}
-    # print(mod_str)
-    # print(mod_str.split(","))
-    for pair in mod_str.split(","):
-        pair = pair.split(":")
-        key = pair[0]
-        value = int(pair[1])
-        mod_dict[key] = value
-    return mod_dict
 
 def start_remora_resquiggle(pod5_files: str, bam_files: str, kmer_lvl_table: str,
                             training_params,
