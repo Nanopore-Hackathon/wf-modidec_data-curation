@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 from typing import List, Dict
 from Remora_resquigle_generate_data import Remora_resquigle_Generation_data
@@ -10,11 +12,26 @@ def get_parser() -> argparse.ArgumentParser:
     required_input.add_argument("--pod5_dir", required=True, type=str, help="Path to the pod5 directory")
     required_input.add_argument("--bam_files", required=True, type=str, help="Path to the BAM files")
     required_input.add_argument("--kmer_lvl_table", required=True, type=str, help="Path to the kmer level table")
-    required_input.add_argument("--index", required=True, type=int, help="Current index of the bam file")
+    
+    required_input.add_argument("--basecalling")
+    required_input.add_argument("--mod_mapping")
+    required_input.add_argument("--modified_data")
+    required_input.add_argument("--take_mod_region")
+    required_input.add_argument("--name_save_file")
+    required_input.add_argument("--modified_base")
+    required_input.add_argument("--mod_pos_initial")
+    required_input.add_argument("--start_base_resquigle")
+
+    required_input.add_argument("--batch_size")
+    required_input.add_argument("--max_label_length")
+    required_input.add_argument("--time_segment")
+    required_input.add_argument("--shift")
+    
+    #required_input.add_argument("--index", required=True, type=int, help="Current index of the bam file")
 
     # Data for Training (grouped under a single flag with multiple values)
     training_group = parser.add_argument_group("Data for Training", "Parameters related to training the model")
-    training_group.add_argument("--training_params", nargs="+", help="""
+    training_group.add_argument("--training_params", help="""
         Parameters related to training, in order:
             basecalling (bool), 
             mod_mapping (bool), 
@@ -26,10 +43,12 @@ def get_parser() -> argparse.ArgumentParser:
             bases_before_mod (int), 
             mod_dict (str)
     """)
+    print(training_group)
+
 
     # Segmentation Parameters (grouped under a single flag with multiple values)
     segmentation_group = parser.add_argument_group("Segmentation Params", "Parameters related to data segmentation")
-    segmentation_group.add_argument("--segmentation_params", nargs="+", help="""
+    segmentation_group.add_argument("--segmentation_params", help="""
         Parameters related to segmentation, in order:
         batch_size (int), 
         max_seq_length (int), 
@@ -53,8 +72,8 @@ def mod_str_to_mod_dict(mod_str: str) -> Dict[str, int]:
     """
     mod_str = mod_str.replace("{", "").replace("}", "").replace('"', "")
     mod_dict = {}
-    print(mod_str)
-    print(mod_str.split(","))
+    # print(mod_str)
+    # print(mod_str.split(","))
     for pair in mod_str.split(","):
         pair = pair.split(":")
         key = pair[0]
@@ -63,30 +82,32 @@ def mod_str_to_mod_dict(mod_str: str) -> Dict[str, int]:
     return mod_dict
 
 def start_remora_resquiggle(pod5_files: str, bam_files: str, kmer_lvl_table: str,
-                            training_params: List[str],
-                            segmentation_params: List[str],
-                            index: int) -> None:
+                            training_params,
+                            segmentation_params: List[str]):
 
-    mod_dict = mod_str_to_mod_dict(training_params.pop(9))
-
+    #mod_dict = mod_str_to_mod_dict(training_params.pop(-1))
+    #print(mod_dict)
     # data_path, 
-    print(pod5_files)
+    #print(pod5_files)
     # bam_file, 
-    print(bam_files)
+    #print(bam_files)
     # level_table_file, 
-    print(kmer_lvl_table)
+    #print(kmer_lvl_table)
     # save_path, 
-    print("outdir")
+    #print("outdir")
     # Variables, 
     print(training_params)
+    #for item in training_params:
+    #   print(item)
     # variables_segmentation, 
-    print(segmentation_params[:5])
+    #print(segmentation_params)
+    #print(segmentation_params[:5])
     # Indexes, 
-    print(segmentation_params[5:])
+    #print(segmentation_params[5:])
     # mod_dictionary, 
-    print(mod_dict)
+    #print(mod_dict)
     # ind_loop
-    print(index)
+    #print(index)
 
     # Remora_resquigle_Generation_data(data_path = pod5_files,
     #                                  bam_file = bam_files,
@@ -103,12 +124,15 @@ if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
 
+    print(args)
+    print(args.training_params)
     start_remora_resquiggle(args.pod5_dir, 
                             args.bam_files, 
                             args.kmer_lvl_table, 
                             args.training_params, 
                             args.segmentation_params, 
-                            args.index)
+                            #args.index)
+    )
 
 
 # python /root/wf-modidec_data-curation/bin/Resquiggle_remora.py \
