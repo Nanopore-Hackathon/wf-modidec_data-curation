@@ -149,18 +149,18 @@
             }
         },
         "test": { 
-            "title": "A virtual grouping used for docs and pretty-printing",
+            "title": "Segmentation Parameters",
             "type": "object",
-            "required": ["foo", "bar"], 
-            "properties": { 
-              "foo": { 
-                "type": "string"
-              },
-              "bar": {
-                "type": "string"
-              }
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
+            "properties" : {
+                "test_file": {
+                    "type": "integer",
+                    "title": "Batch size",
+                    "default":16,
+                    "description": "Number of chunks saved per file (int)"
+                }
             }
-          }
 
     },
     "allOf": [
