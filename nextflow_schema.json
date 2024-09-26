@@ -1,0 +1,188 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",    
+    "title": "wf-modidec_data-curation",
+    "description": "Nextflow workflow for running Modidec.",
+    "url": "https://github.com/nanopore-hackathon/wf-modidec",
+    "type": "object",
+    "definitions": {
+        "Input": {
+            "title": "Input Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Mandatory Parameters to start the resquiggle analysis",
+            "required": ["pod5_files", "bam_files", "outdir", "kmer_lvl_table"],
+            "properties": {
+                "pod5_files": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "title": "pod5 Input Directory",
+                    "description": "Input directory of pod5 files"
+                },
+                "bam_files": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "title": "Bam File Input Directory",
+                    "description": "Input directory of bam files"
+                },
+                "run_name":{
+                    "type": "string",
+                    "title": "Run Name",
+                    "description": "Title of Sequencing Run for Generation of Output Files"
+                },
+                "kmer_lvl_table": {
+                    "type": "number",
+                    "title": "KMER Lvl Table",
+                    "default":5,
+                    "description": "",
+                    "exclusiveMaximum":6,
+                    "exclusiveMinimum":3
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "path",
+                    "title": "Output Directory",
+                    "default": "output",
+                    "description": "This should be a directory to store the output"
+                }
+            }
+        },
+        "Training_Data": {
+            "title": "Training Data Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Detailed Options Relevant to Training",
+            "properties": {
+                "mod_mapping": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Mofication Mapping",
+                    "description": "Updated by nicolo"
+                },
+                "basecalling": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Basecalling",
+                    "description": "Updated by nicolo"
+                },
+                "modified_data": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Modified Data - IDK what this means",
+                    "description": "Updated by nicolo"
+                },
+                "use_modified_region": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "use_modified_region - IDK what this means",
+                    "description": "Updated by nicolo"
+                },
+                "training_out":{
+                    "type": "string",
+                    "format": "path",
+                    "title": "Training Output Directory",
+                    "default": "modified_data",
+                    "description": "Updated by Nicolo"
+                },
+                "save_long_reads": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Save Long Reads",
+                    "description": "Updated by nicolo"
+                },
+                "mod_type": {
+                    "type": "string",
+                    "title": "Modification Type",
+                    "default": "5mC",
+                    "description": "Updated by Nicolo"
+                },
+                "mod_pos": {
+                    "type": "number",
+                    "title": "Location of Modification",
+                    "default":50,
+                    "description": "Updated by Nicolo"
+                },
+                "bases_before_mod": {
+                    "type": "number",
+                    "title": "Number of Bases before Modification",
+                    "description": "Updated by Nicolo",
+                    "default": 0
+                },
+                "mod_dict": {
+                    "type": "string",
+                    "title": "Modification Dictionary",
+                    "default": "{}",
+                    "description": "Updated by Nicolo"
+                }
+            }
+        },
+        "Segmentation_Params": {
+            "title": "Segmentation Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
+            "properties" : {
+                "batch_size": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":16,
+                    "description": "Updated by Nicolo"
+                },
+                "max_seq_length": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":40,
+                    "description": "Updated by Nicolo"
+                },
+                "chunk_length": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":400,
+                    "description": "Updated by Nicolo"
+                },
+                "time_shift": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":25,
+                    "description": "Updated by Nicolo"
+                },
+                "start_read_num": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":0,
+                    "description": "Updated by Nicolo"
+                },
+                "end_read_num": {
+                    "type": "number",
+                    "title": "To update",
+                    "default":1000,
+                    "description": "Updated by Nicolo"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/Input"
+        },
+        {
+            "$ref": "#/definitions/Training_Data"
+        },
+        {
+            "$ref": "#/definitions/Segmentation_Params"
+        }
+    ],
+    "resources": {
+        "recommended": {
+            "cpus": 2,
+            "memory": "10GB"
+        },
+        "minimum": {
+            "cpus": 2,
+            "memory": "4GB"
+        },
+        "run_time": "Depends on Sequencing Size"
+    }
+}
