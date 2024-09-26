@@ -44,7 +44,7 @@ workflow.onError {
 workflow.onComplete {
     println "Analysis Complete at: $workflow.complete"
     println "Execution Status: ${ workflow.success ? 'OK' : 'failed' }"
-    println "Location of Output: ${ params.out_dir }"
+    println "Location of Output: ${ params.outdir }"
 
     //Pinguscript.ping_complete(nextflow, workflow, params)
 }

@@ -22,7 +22,7 @@ def argparser():
     parser.add_argument("--modified_data", required=True, type=bool)
     parser.add_argument("--take_mod_region", required=True, type=bool)
     parser.add_argument("--name_save_file", required=True, type=str)
-    parser.add_argument("--modified_base", required=True, type=str, nargs="+")
+    parser.add_argument("--modified_base", required=True, type=str)
     parser.add_argument("--mod_pos_initial", required=True, type=int)
     parser.add_argument("--start_base_resquigle", required=True, type=int)
 
