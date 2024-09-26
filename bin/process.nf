@@ -6,9 +6,9 @@ nextflow.enable.dsl=2
 
 process Resquiggle_Remora {
 
-    container "${params.container__modidec_dacu}"
+    label "modidec_dacu"
     publishDir "${params.outdir}/", mode: "copy"
-
+    
     input:
         // These are the paths to the input files
         path(pod5_files)
@@ -24,8 +24,10 @@ process Resquiggle_Remora {
     output:
         path("$params.outdir/*.npz"), emit:save_path
     script:
+        //This block will create a variable containing a comma separated list from the input variables
         def general_variables = [modified_data, use_modified_region, training_out, mod_type, mod_pos, bases_before_mod, mod_dict].join(',')
         def segmentation_variables = [batch_size, max_seq_length, chunck_length, time_shift,start_read_number, end_read_number].join(',')
+        
         python bin 'Resquiggle_remora.py --{$pod5_files} --{$bam_files} --{$kmer_lvl_table} --{$general_variables} --{$segmentation_variables}'
 
     stub:
