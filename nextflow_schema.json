@@ -1,11 +1,12 @@
 {
-    "$schema": "http://json-schema.org/draft-06/schema",
-    "$id": "https://raw.githubusercontent.com/Nanopore-Hackathon/wf-modidec_data-curation/master/nextflow_schema.json",
-    "title": "wf-modide_data-curation Pipeline Parameters",
-    "description": "Nicolo needs to update this",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",    
+    "title": "wf-modidec_data-curation",
+    "description": "Nextflow workflow for running Modidec.",
+    "url": "https://github.com/nanopore-hackathon/wf-modidec",
     "type": "object",
     "definitions": {
-        "Input Parameters": {
+        "Input": {
             "title": "Input Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
@@ -34,7 +35,7 @@
                 "kmer_lvl_table": {
                     "type": "number",
                     "title": "KMER Lvl Table",
-                    "default":500,
+                    "default":5,
                     "description": "",
                     "exclusiveMaximum":6,
                     "exclusiveMinimum":3
@@ -48,7 +49,7 @@
                 }
             }
         },
-        "Training Data": {
+        "Training_Data": {
             "title": "Training Data Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
@@ -82,7 +83,7 @@
                     "type": "string",
                     "format": "path",
                     "title": "Training Output Directory",
-                    "default": "training_out",
+                    "default": "modified_data",
                     "description": "Updated by Nicolo"
                 },
                 "save_long_reads": {
@@ -123,164 +124,25 @@
                 }
             }
         },
-        "Segmentation Params": {
-            "title": "Adaptor Identification, Demultiplexing, and Subtelomeric Filtering Parameters",
+        "Segmentation_Params": {
+            "title": "Segmentation Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
             "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
             "properties" : {
-                "adaptor_sequence_errors":{
-                    "type":"number",
-                    "default":2,
-                    "title": "Allowed Errors in Adaptor Sequence",
-                    "description": "Number of allowed errors to be found in the adaptor sequence. The adaptor sequence wil only be found after ten telomeric repeats. It is recomended this value be 2 for a 12 nucleotide adaptor sequence. For each additional 8bp, the number of errors should be increased by 1"
-                },
-                "barcode_errors":{
-                    "type":"number",
-                    "default":3,
-                    "title":"Allowed Errors in Barcode Sequences",
-                    "description": "Number of allowed errors in the barcode sequence. It is recomended this value by 1/8 the length of the barcode assuming the hamming distance between barcodes is greater than 1/8 the barcode length"
-                },
-                "min_subtelo_length": {
-                    "type":"number",
-                    "title":"Minimum Subtelomere Length",
-                    "default":300,
-                    "description": "Minimum Read Lenth Before VRR region Telomeric Start Site to Ensure sequencing completely through telomeres"
-                },
-                "subtelo_threshold": {
-                  "type":"number",
-                  "default":0.3,
-                  "minimum":0,
-                  "exclusiveMaximum": 1,
-                  "title":"Maximum Telomeric Percentage",
-                  "description":"Maximum percentage of one nucleotide substitutions of telomeric sequences found within min_subtelo_length before read does not pass filtering criteria"
-                }
+               
             }
-        },
-        "Telo_Start":{
-            "title": "Determining Telomere Start Position",
-            "type": "object",
-            "fa_icon": "fas fa-arrow-right",
-            "description": "Advanced Options regarding Telomere Start Position Analysis and Filtering",
-            "properties": {
-                "sliding_window_size":{
-                    "type":"number",
-                    "default":200,
-                    "title": "Sliding Window Size",
-                    "description": "Length of the sliding window analyzed for the identification of telomeric start"
-                },
-                "sliding_window_interval":{
-                    "type":"number",
-                    "default":10,
-                    "title":"Sliding Window Interval",
-                    "description": "How many base pairs will the sliding window jump each time rather than operating on a nucleotide by nucleotide slide"
-                },
-                "upper_threshold":{
-                    "type":"number",
-                    "default":0.6,
-                    "minimum":0,
-                    "exclusiveMaximum": 1,
-                    "title": "Upper Telomeric Threshold",
-                    "description": "The percentage of which a sliding window must consist of one nucleotide repeat variations for the telomere to start. Must be a value between 0 and 1"
-                },
-                "lower_threshold":{
-                    "type":"number",
-                    "default":0.1,
-                    "minimum":0,
-                    "exclusiveMaximum": 1,
-                    "title": "Lower Telomeric Threshold",
-                    "description": "Sliding window one nucleotide variation percentage must not drop below this value after upper threshold has been surpassed."
-                },
-                "telomeric_repeat_percentage":{
-                    "type":"number",
-                    "default":0.7,
-                    "minimum":0,
-                    "exclusiveMaximum": 1,
-                    "title": "Mimumum Telomere Percentage",
-                    "description": "Additional filtering step that removes telomeres that consist of less than this percentage one nucleotide variant repeats from the VRR start to the adaptor sequence"
-                },
-                "consecutive_thresholds":{
-                    "type":"number",
-                    "default":15,
-                    "minimum":0,
-                    "title":"Consecutive Sliding Windows",
-                    "description":"Number of consecutive sliding windows below the lower threshold for telomere start site to be unidentified"
-                    
-                },
-                "consecutive_repeats": {
-                    "type":"number",
-                    "default":3,
-                    "title":"Repeat Stretch Length",
-                    "description": "All perfect repeats existing in a strecth of x or more consecutive repeats between the VRR start and the adaptor will be considered in telomere length calculations"
-                }
-            }
-        },
-        "Advanced_Options": {
-            "title": "Advanced Options",
-            "type": "object",
-            "fa_icon": "fas fa-arrow-right",
-            "description": "Advanced Options regarding Mutant and Other Analyses",
-            "properties": {
-                "remove_wd":{
-                    "title":"Remove Work Directory",
-                    "type":"boolean",
-                    "default":false,
-                    "description": "If true, working directory is removed on run complete. This prevents build up of unnecesary files but prevents -resume from being used"
-                },
-                "detailed_stats":{
-                    "title": "Detailed Plots",
-                    "type":"boolean",
-                    "default":false,
-                    "description": "Additional sets of plots analysing telomeric reads are created. See README for more details"
-                },
-                "strand_comparison":{
-                    "title": "Strand Comparison",
-                    "type":"boolean",
-                    "default":false,
-                    "description": "Generate Plots Directly comparing C to G strand results"
-                },
-                "indiv_read_plots":{
-                    "title":"Individual Real Plots",
-                    "type":"boolean",
-                    "default":false,
-                    "description": "Generate Plots showing individual reads and telomeric start identification"
-                },
-                "plot_vrr_length":{
-                    "title":"Plot VRR Length",
-                    "type":"boolean",
-                    "default":false,
-                    "description": "If set to true additional plots will be created mirroring those for telomere length analysis, but using the VRR length instead of calculated telomere length"
-                },
-                "restriction_digest_analysis": {
-                    "type":"string",
-                    "title":"Restrction Enzymes",
-                    "description":"Provide a list of comma seperated restriction enzyme sites for an analysis of digestion completion",
-                    "default": ""
-                },
-                "mutant": {
-                    "type":"string",
-                    "title":"Mutant Repeat of Interest",
-                    "description":"Telomeric Mutation of Interest - See Manual for more details",
-                    "default": ""
-                }
-            } 
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions/Input_Output"
+            "$ref": "#/definitions/Input"
         },
         {
-            "$ref": "#/definitions/Basic_Options"
+            "$ref": "#/definitions/Training_Data"
         },
         {
-            "$ref": "#/definitions/Adaptor_Demux_Filter"
-        },
-        {
-            "$ref": "#/definitions/Telo_Start"
-        },
-        {
-            "$ref": "#/definitions/Advanced_Options"
+            "$ref": "#/definitions/Segmentation_Params"
         }
     ],
     "resources": {
