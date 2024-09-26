@@ -1,0 +1,177 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",    
+    "title": "wf-modidec_data-curation",
+    "description": "Nextflow workflow for running Modidec.",
+    "url": "https://github.com/nanopore-hackathon/wf-modidec",
+    "type": "object",
+    "definitions": {
+        "Input": {
+            "title": "Input Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Mandatory Parameters to start the resquiggle analysis",
+            "required": ["pod5_files", "bam_files", "outdir", "kmer_lvl_table"],
+            "properties": {
+                "pod5_files": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "title": "pod5 Input Directory",
+                    "description": "Input directory of pod5 files"
+                },
+                "bam_files": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "title": "Bam File Input Directory",
+                    "description": "Input directory of bam files"
+                },
+                "kmer_lvl_table": {
+                    "type": "string",
+                    "format": "path",
+                    "title": "KMER-level table file",
+                    "description": "should be RNA004 or RNA002 and link to a hardcode path to the ONT website https://github.com/nanoporetech/kmer_models"
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "path",
+                    "title": "Save Path",
+                    "description": "This is the directory where the output gets saved"
+                }
+            }
+        },
+        "Training_Data": {
+            "title": "Training Data Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Detailed Options Relevant to Training",
+            "properties": {
+                "mod_mapping": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Mofication Mapping",
+                    "description": "Mofication Mapping or Basecalling?"
+                },
+                "basecalling": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Basecalling",
+                    "description": "Mofication Mapping or Basecalling?"
+                },
+                "modified_data": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Modified Data",
+                    "description": "Do the reads contain modified bases or not?"
+                },
+                "use_modified_region": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Use Modified Region",
+                    "description": "Will create chucks around modification position"
+                },
+                "training_out":{
+                    "type": "string",
+                    "format": "string",
+                    "title": "Training Output Directory",
+                    "default": "modified_data",
+                    "description": "Name of the output file"
+                },
+                "mod_type": {
+                    "type": "string",
+                    "title": "Modification Type",
+                    "default": "M",
+                    "description": "A letter linked to modification dictionary"
+                },
+              	"mod_pos": {
+                    "type": "integer",
+                    "title": "Location of Modification",
+                    "default":92,
+                    "description": "Position of the modification in the reference sequence (int)"
+                },
+                "bases_before_mod": {
+                    "type": "integer",
+                    "title": "Number of Bases before Modification",
+                    "description": "If you want you can take more bases to the left or right from your modification position (int)",
+                    "default": 0
+                },
+                "mod_dict": {
+                    "type": "string",
+                    "title": "Modification Dictionary",
+                    "default": "{\"G\":2, \"M\":3, \"I\":4, \"P\":5}",
+                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
+                }
+            }
+        },
+        "Segmentation_Params": {
+            "title": "Segmentation Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
+            "properties" : {
+                "batch_size": {
+                    "type": "integer",
+                    "title": "Batch size",
+                    "default":16,
+                    "description": "Number of chunks saved per file (int)"
+                },
+                "max_seq_length": {
+                    "type": "integer",
+                    "title": "Maximum sequence length",
+                    "default":40,
+                    "description": "Maximum number of base that a chunk can have (int)"
+                },
+                "chunk_length": {
+                    "type": "integer",
+                    "title": "Number of chunks",
+                    "default":400,
+                    "description": "Defines how many timepoints to inlude within a sliding window (int)"
+                },
+                "time_shift": {
+                    "type": "integer",
+                    "title": "Time shift",
+                    "default":25,
+                    "description": "How many timepoint to shift your sliding window to create annew represntation of the modification chunk (int)"
+                },
+                "start_read_num": {
+                    "type": "integer",
+                    "title": "To update",
+                    "default":0,
+                    "description": "Select the start entry from the bam file (int)"
+                },
+                "end_read_num": {
+                    "type": "integer",
+                    "title": "To update",
+                    "default":1000,
+                    "description": "Select the end entry from the bam file(int)"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/Input"
+        },
+        {
+            "$ref": "#/definitions/Training_Data"
+        },
+        {
+            "$ref": "#/definitions/Segmentation_Params"
+        },
+        {
+            "$ref": "#/definitions/test"
+        }
+    ],
+    "resources": {
+        "recommended": {
+            "cpus": 2,
+            "memory": "10GB"
+        },
+        "minimum": {
+            "cpus": 2,
+            "memory": "4GB"
+        },
+        "run_time": "Depends on Sequencing Size"
+    }
+}
