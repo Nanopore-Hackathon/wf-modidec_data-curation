@@ -11,8 +11,8 @@ import numpy as np
 def Remora_resquigle_Generation_data(data_path, bam_files, level_table_file, save_path, Variables, variables_segmentation, Indexes, mod_dictionary):
 
     ind_loop = 0
+    
     for bam_file in bam_files:
-
         bam_file = bam_folder + "/" + bam_file
 
         #initial variable
