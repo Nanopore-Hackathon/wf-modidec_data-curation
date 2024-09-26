@@ -17,15 +17,15 @@
                     "type": "string",
                     "format": "path",
                     "exists": true,
-                    "title": "pod5 Input Directory",
-                    "description": "Input directory of pod5 files"
+                    "title": "Raw Data Directory (.pod5 files)",
+                    "description": "Input directory containing .pod5 files"
                 },
                 "bam_files": {
                     "type": "string",
                     "format": "path",
                     "exists": true,
-                    "title": "Bam File Input Directory",
-                    "description": "Input directory of bam files"
+                    "title": "Binary Alignment Map Directory (.bam files)",
+                    "description": "Input directory containing .bam files for the description"
                 },
                 "kmer_lvl_table": {
                     "type": "string",
@@ -42,7 +42,7 @@
             }
         },
         "Training_Data": {
-            "title": "Training Data Parameters",
+            "title": "Data Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
             "description": "Detailed Options Relevant to Training",
@@ -69,7 +69,7 @@
                     "type": "boolean",
                     "default": true,
                     "title": "Use Modified Region",
-                    "description": "Will create chucks around modification position"
+                    "description": "Will create chunks around modification position"
                 },
                 "training_out":{
                     "type": "string",
@@ -78,29 +78,29 @@
                     "default": "modified_data",
                     "description": "Name of the output file"
                 },
-                "mod_type": {
-                    "type": "string",
-                    "title": "Modification Type",
-                    "default": "M",
-                    "description": "A letter linked to modification dictionary"
-                },
-              	"mod_pos": {
-                    "type": "integer",
-                    "title": "Location of Modification",
-                    "default":92,
-                    "description": "Position of the modification in the reference sequence (int)"
-                },
-                "bases_before_mod": {
-                    "type": "integer",
-                    "title": "Number of Bases before Modification",
-                    "description": "If you want you can take more bases to the left or right from your modification position (int)",
-                    "default": 0
-                },
                 "mod_dict": {
                     "type": "string",
                     "title": "Modification Dictionary",
                     "default": "{\"G\":2, \"M\":3, \"I\":4, \"P\":5}",
                     "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
+                },
+                "mod_type": {
+                    "type": "string",
+                    "title": "Modification Type",
+                    "default": "M",
+                    "description": "Choose a key according to the modification dictionary indicating your modification type"
+                },
+              	"mod_pos": {
+                    "type": "integer",
+                    "title": "Location of Modification",
+                    "default":92,
+                    "description": "Position of the modification in the reference sequence"
+                },
+                "bases_before_mod": {
+                    "type": "integer",
+                    "title": "Number of Bases before Modification",
+                    "description": "If you want you can take more bases to the left or right from your modification position",
+                    "default": 0
                 }
             }
         },
@@ -108,43 +108,43 @@
             "title": "Segmentation Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
-            "description": "Advanced Parameters relating to the identification of adaptor sequences, demultiplexing samples, and filtering telomeric reads by their subtelomere",
+            "description": "Advanced parameteres related to data segmentation",
             "properties" : {
                 "batch_size": {
                     "type": "integer",
                     "title": "Batch size",
                     "default":16,
-                    "description": "Number of chunks saved per file (int)"
+                    "description": "Number of chunks saved per file"
                 },
                 "max_seq_length": {
                     "type": "integer",
                     "title": "Maximum sequence length",
                     "default":40,
-                    "description": "Maximum number of base that a chunk can have (int)"
+                    "description": "Maximum number of base that a chunk can have"
                 },
                 "chunk_length": {
                     "type": "integer",
                     "title": "Number of chunks",
                     "default":400,
-                    "description": "Defines how many timepoints to inlude within a sliding window (int)"
+                    "description": "Defines how many timepoints to inlude within a sliding window"
                 },
                 "time_shift": {
                     "type": "integer",
                     "title": "Time shift",
                     "default":25,
-                    "description": "How many timepoint to shift your sliding window to create annew represntation of the modification chunk (int)"
+                    "description": "How many timepoint to shift your sliding window to create a new represntation of the modification chunk"
                 },
                 "start_read_num": {
                     "type": "integer",
                     "title": "To update",
                     "default":0,
-                    "description": "Select the start entry from the bam file (int)"
+                    "description": "Select the start entry from the .bam file"
                 },
                 "end_read_num": {
                     "type": "integer",
                     "title": "To update",
                     "default":1000,
-                    "description": "Select the end entry from the bam file(int)"
+                    "description": "Select the end entry from the .bam file"
                 }
             }
         }
@@ -158,9 +158,6 @@
         },
         {
             "$ref": "#/definitions/Segmentation_Params"
-        },
-        {
-            "$ref": "#/definitions/test"
         }
     ],
     "resources": {
