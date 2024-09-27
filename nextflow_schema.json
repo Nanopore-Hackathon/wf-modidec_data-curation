@@ -15,17 +15,23 @@
             "properties": {
                 "pod5_files": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "exists": true,
                     "title": "Raw Data Directory (.pod5 files)",
                     "description": "Input directory containing .pod5 files"
                 },
                 "bam_files": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "exists": true,
                     "title": "Binary Alignment Map Directory (.bam files)",
                     "description": "Input directory containing .bam files for the description"
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "title": "Save Path",
+                    "description": "This is the directory where the output gets saved"
                 },
                 "kmer_lvl_table": {
                     "type": "string",
@@ -36,12 +42,6 @@
                         "RNA004",
                         "RNA002"
                     ]
-                },
-                "outdir": {
-                    "type": "string",
-                    "format": "path",
-                    "title": "Save Path",
-                    "description": "This is the directory where the output gets saved"
                 }
             }
         },
@@ -51,6 +51,12 @@
             "fa_icon": "fas fa-arrow-right",
             "description": "Detailed Options Relevant to Training",
             "properties": {
+                "mod-mapping": {
+                    "type": "boolean",
+                    "title": "Modification Mapping",
+                    "default": "true",
+                    "description": "Map modifications in your reads"
+                },
                 "modified_data": {
                     "type": "boolean",
                     "default": true,
@@ -65,15 +71,14 @@
                 },
                 "training_out":{
                     "type": "string",
-                    "format": "string",
                     "title": "Training Output Directory",
                     "default": "modified_data",
                     "description": "Name of the output file"
                 },
-                "mod_dict": {
+                "mod_list": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{\"B\":2, \"M\":3, \"I\":4, \"P\":5}",
+                    "default": "M P",
                     "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 },
                 "mod_type": {
@@ -92,7 +97,8 @@
                     "type": "integer",
                     "title": "Number of Bases before Modification",
                     "description": "If you want you can take more bases to the left or right from your modification position",
-                    "default": 0
+                    "default": 0,
+                    "maximum": 11
                 }
             }
         },
