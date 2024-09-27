@@ -58,11 +58,13 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
         # /// define the function for resquile from Remora ///
         # // old version used for DNA. maybe DNA data has to be analysed again //
 
-        # debugged to here
-    if level_table_file == "4":
-        level_table_file = base_dir + "/data/5mer_levels_v1.txt"
-    else:
-        level_table_file = base_dir + "/data/9mer_levels_v1.txt"
+    # if level_table_file == "4":
+    #     level_table_file = base_dir + "/data/5mer_levels_v1.txt"
+    # else:
+    #     level_table_file = base_dir + "/data/9mer_levels_v1.txt"
+
+    print(level_table_file)
+    level_table_file = level_table_file
 
     sig_map_refiner = refine_signal_map.SigMapRefiner(
                             kmer_model_filename=level_table_file,
@@ -193,7 +195,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     else:
                         mod_position = 0
 
-                print("Check One Passed")
                 if take_mod_region == True:
                     minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
                     N_shift = int((time_segment + minus_start)/shift)
@@ -306,7 +307,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 if __name__ == "__main__":
 
     args = argparser().parse_args()
-    #print(args)
+    print(args)
     Remora_resquigle_Generation_data(args.base_dir, args.pod5_dir, args.bam_file, args.kmer_lvl_table, "output", \
         args.basecalling, args.mod_mapping, args.modified_data, args.take_mod_region, args.name_save_file, args.modified_base, \
         args.mod_pos_initial, args.start_base_resquigle, args.batch_size, args.max_label_length, args.time_segment, args.shift, \

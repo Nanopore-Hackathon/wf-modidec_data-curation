@@ -15,29 +15,33 @@
             "properties": {
                 "pod5_files": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "exists": true,
                     "title": "Raw Data Directory (.pod5 files)",
                     "description": "Input directory containing .pod5 files"
                 },
                 "bam_files": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "exists": true,
                     "title": "Binary Alignment Map Directory (.bam files)",
                     "description": "Input directory containing .bam files for the description"
                 },
-                "kmer_lvl_table": {
-                    "type": "string",
-                    "format": "path",
-                    "title": "KMER-level table file",
-                    "description": "should be RNA004 or RNA002 and link to a hardcode path to the ONT website https://github.com/nanoporetech/kmer_models"
-                },
                 "outdir": {
                     "type": "string",
-                    "format": "path",
+                    "format": "directory-path",
                     "title": "Save Path",
                     "description": "This is the directory where the output gets saved"
+                },
+                "flowcell_type": {
+                    "type": "string",
+                    "title": "Flowcell Type",
+                    "default": "RNA004",
+                    "description": "Select the RNA flowcell type you have generated your data with",
+                    "enum": [
+                        "RNA004",
+                        "RNA002"
+                    ]
                 }
             }
         },
@@ -49,15 +53,9 @@
             "properties": {
                 "mod_mapping": {
                     "type": "boolean",
+                    "title": "Modification Mapping",
                     "default": true,
-                    "title": "Mofication Mapping",
-                    "description": "Mofication Mapping or Basecalling?"
-                },
-                "basecalling": {
-                    "type": "boolean",
-                    "default": false,
-                    "title": "Basecalling",
-                    "description": "Mofication Mapping or Basecalling?"
+                    "description": "Map modifications in your reads"
                 },
                 "modified_data": {
                     "type": "boolean",
@@ -73,7 +71,6 @@
                 },
                 "training_out":{
                     "type": "string",
-                    "format": "string",
                     "title": "Training Output Directory",
                     "default": "modified_data",
                     "description": "Name of the output file"
@@ -100,7 +97,8 @@
                     "type": "integer",
                     "title": "Number of Bases before Modification",
                     "description": "If you want you can take more bases to the left or right from your modification position",
-                    "default": 0
+                    "default": 0,
+                    "maximum": 11
                 }
             }
         },
