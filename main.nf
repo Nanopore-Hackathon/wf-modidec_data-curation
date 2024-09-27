@@ -22,17 +22,26 @@ println """\
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 // include { process_name } from "process_file"
-include { Resequiggle_Remora } from "./bin/process.nf"
+include { Resquiggle_Remora } from "./bin/process.nf"
 
-WorkflowMain.initialise(workflow, params, log)
+// WorkflowMain.initialise(workflow, params, log)
 
 
 workflow {
 
-    Pinguscript.ping_start(nextflow, workflow, params)
+    //Pinguscript.ping_start(nextflow, workflow, params)
 
-    Resquiggle_Remora(inputs)
+    bam_files_ch = Channel.fromPath("${params.bam_files}/*.bam")
+    
 
+    Resquiggle_Remora(file(params.pod5_files), bam_files_ch, params.kmer_lvl_table,
+    tuple(params.basecalling, params.mod_mapping, params.modified_data, params.use_modified_region, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+    tuple(params.batch_size, params.max_seq_length, params.chunk_length, params.time_shift, params.start_read_num, params.end_read_num),
+    params.mod_list)
+}
+
+workflow.onError {
+    //Pinguscript.ping_error(nextflow, workflow, params)
 }
 
 workflow.onComplete {
@@ -40,5 +49,5 @@ workflow.onComplete {
     println "Execution Status: ${ workflow.success ? 'OK' : 'failed' }"
     println "Location of Output: ${ params.outdir }"
 
-    Pinguscript.ping_complete(nextflow, workflow, params)
+    //Pinguscript.ping_complete(nextflow, workflow, params)
 }
