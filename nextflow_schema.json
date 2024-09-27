@@ -27,7 +27,7 @@
                     "title": "Binary Alignment Map Directory (.bam files)",
                     "description": "Input directory containing .bam files for the description"
                 },
-                "kmer_lvl_table": {
+                "flowcell_type": {
                     "type": "string",
                     "title": "Flowcell Type",
                     "default": "RNA004",
