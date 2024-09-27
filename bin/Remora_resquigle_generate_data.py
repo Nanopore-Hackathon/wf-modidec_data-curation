@@ -143,42 +143,35 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file_dir, level_ta
             start_analysis = False
 
             if take_mod_region:
-
                 if high_threshold < val_total_seq and position_adjusting < mod_pos_initial and Error_read == False: 
 
                     start_analysis = True
 
             else:
-
                 if  Error_read == False:
 
                         start_analysis = True
 
 
             if start_analysis: # ///////// TO CHECK !!! ////////////
-
                 Signal_onehot = np.zeros([len(Raw_signal),4 + 1])
                 Output_onehot = np.zeros([len(Raw_signal), labels + 2])
 
                 mod_pos = mod_pos_initial - position_adjusting - 1            
 
                 if modified_data:
-
                     seq_resquigle_mod = seq_resquigle[:mod_pos] + "X" + seq_resquigle[mod_pos +1:] 
 
                 else:
-
                     seq_resquigle_mod = seq_resquigle
 
                 if mod_mapping:
-                    
                     #modification_dict = {"G":2, "M":3, "I":4, "P":5}
                     #value_modification = int(mod_dictionary[Modfied_base])
-                    value_modification = int(mod_list.index(Modified_base))
+                    value_modification = int(mod_list.index(Modified_base)) + 1
                     base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
 
                 if basecalling:
-
                     base_dict_output = { "A":1, "C":2, "G":3, "T":4, "X":5}
                     
                 base_dict = {"A":1, "C":2, "G":3, "T":4}
@@ -186,22 +179,17 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file_dir, level_ta
                 try:
 
                     for k in range(len(seq_resquigle)):
-
                         start_resq = start_end_resquigle[k]
                         Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
                         Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
 
-
                     # debugged till here
-
                     if mod_mapping and modified_data:
-
                         mod_position = np.where(Output_onehot[:,value_modification] > 0)[0][0]
 
                     if mod_mapping and not modified_data:
 
                         if take_mod_region:
-
                             mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
 
                         else:
@@ -209,17 +197,13 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file_dir, level_ta
                             mod_position = 0
                             
                     if basecalling and modified_data:
-
                         mod_position = np.where(Output_onehot[:,5] > 0)[0][0]
 
                     if basecalling and not modified_data: # to check for the others
-
                         if take_mod_region == True:
-
                             mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
 
                         else:
-                            
                             mod_position = 0
 
                     if take_mod_region == True:

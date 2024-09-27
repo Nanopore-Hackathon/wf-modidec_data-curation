@@ -78,10 +78,10 @@
                     "default": "modified_data",
                     "description": "Name of the output file"
                 },
-                "mod_dict": {
+                "mod_list": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "{\"G\":2, \"M\":3, \"I\":4, \"P\":5}",
+                    "default": "M P",
                     "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
                 },
                 "mod_type": {
