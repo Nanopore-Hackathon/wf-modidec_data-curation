@@ -33,7 +33,7 @@
                     "title": "Save Path",
                     "description": "This is the directory where the output gets saved"
                 },
-                "kmer_lvl_table": {
+                "flowcell_type": {
                     "type": "string",
                     "title": "Flowcell Type",
                     "default": "RNA004",
