@@ -51,7 +51,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     mod_mapping = mod_mapping == "true"
     modified_data = modified_data == "true"
     take_mod_region = take_mod_region == "true"
-    
+
     # /////// read the files //////
 
     pod5_dr = pod5.DatasetReader(data_path)
@@ -78,16 +78,14 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                             scale_iters=0,
                             do_fix_guage=True)
         
-    if mod_mapping:
-        labels = len(mod_list)
-    if basecalling:
-        labels=4
+    labels = len(mod_list)
 
-    current_index = start_index
-    for name_id in read_id[start_index: end_index]: #need to find a way to choose the ids.
+    old_start = start_index
+    
+    for name_id in read_id[old_start: end_index]: #need to find a way to choose the ids.
 
-        current_index += 1
-        print(current_index)
+        start_index += 1
+        print(start_index)
         seq_resquigle = ""
         position_adjusting = 0
         Error_read = False
@@ -141,8 +139,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
         start_analysis = False
 
         if take_mod_region:
+            print("TAKING MOD REGION")
             if high_threshold < val_total_seq and position_adjusting < mod_pos_initial and Error_read == False: 
-
                 start_analysis = True
 
         else:
@@ -167,12 +165,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     #modification_dict = {"G":2, "M":3, "I":4, "P":5}
                     #value_modification = int(mod_dictionary[Modfied_base])
                 print("MOD MAPPING")
-                value_modification = int(mod_list.index(Modified_base)) + 1
+                value_modification = int(mod_list.index(Modified_base)) + 2
                 base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
-
-            if basecalling:
-                print("BASECALLING")
-                base_dict_output = { "A":1, "C":2, "G":3, "T":4, "X":5}
                     
             base_dict = {"A":1, "C":2, "G":3, "T":4}
 
@@ -192,14 +186,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     else:
                         mod_position = 0
                             
-                if basecalling and modified_data:
-                    mod_position = np.where(Output_onehot[:,5] > 0)[0][0]
-
-                if basecalling and not modified_data: # to check for the others
-                    if take_mod_region == True:
-                        mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
-                    else:
-                        mod_position = 0
 
                 if take_mod_region == True:
                     minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
@@ -294,14 +280,12 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                             train2_batch[m] = train2_for_batch
                             output_batch[m] = output_for_batch
 
-                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(current_index)}" + f"_{n}_{Modified_base}.npz"
+                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}" + f"_{n}_{Modified_base}.npz"
                     np.savez_compressed(file_name, 
                                                 train_input = train1_batch,
                                                 train_input2 = train2_batch,
                                                 train_output = output_batch)
-                                                    
-                    # // save long rads enter in the quality check. maybe is not necessary
-                
+                                                                    
             except Exception as e:
                 print("resquigle error")
                 print(e)   
