@@ -51,10 +51,10 @@
             "fa_icon": "fas fa-arrow-right",
             "description": "Detailed Options Relevant to Training",
             "properties": {
-                "mod-mapping": {
+                "mod_mapping": {
                     "type": "boolean",
                     "title": "Modification Mapping",
-                    "default": "true",
+                    "default": true,
                     "description": "Map modifications in your reads"
                 },
                 "modified_data": {

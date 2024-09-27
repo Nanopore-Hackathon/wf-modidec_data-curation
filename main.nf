@@ -23,6 +23,7 @@ println """\
 */
 // include { process_name } from "process_file"
 include { Resquiggle_Remora } from "./bin/process.nf"
+include { load_kmer_tables } from "./bin/process.nf"
 
 // WorkflowMain.initialise(workflow, params, log)
 
@@ -33,8 +34,8 @@ workflow {
 
     bam_files_ch = Channel.fromPath("${params.bam_files}/*.bam")
     
-
-    Resquiggle_Remora(file(params.pod5_files), bam_files_ch, params.kmer_lvl_table,
+    kmer_table = load_kmer_tables(params.flowcell_type)
+    Resquiggle_Remora(file(params.pod5_files), bam_files_ch, kmer_table.kmer_lvl_table,
     tuple(params.basecalling, params.mod_mapping, params.modified_data, params.use_modified_region, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
     tuple(params.batch_size, params.max_seq_length, params.chunk_length, params.time_shift, params.start_read_num, params.end_read_num),
     params.mod_list)

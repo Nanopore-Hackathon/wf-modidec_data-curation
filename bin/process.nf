@@ -8,15 +8,15 @@ process load_kmer_tables {
     input:
     val(flowcell_type)
     output:
-    path(kmer_lvl_table), emit:kmer_lvl_table
+    path("*.txt"), emit:kmer_lvl_table
     script:
 
     //load kmer table from website
     """
     if [[ ${flowcell_type} == "RNA002" ]]; then
-	wget "https://github.com/nanoporetech/kmer_models/blob/master/legacy/legacy_r9.4_180mv_70bps_5mer_RNA/template_median69pA.model" \$kmer_lvl_table
+	wget https://raw.githubusercontent.com/nanoporetech/kmer_models/refs/heads/master/rna_r9.4_180mv_70bps/5mer_levels_v1.txt
 	else
-    wget "https://github.com/nanoporetech/kmer_models/blob/master/rna004/9mer_levels_v1.txt" \$kmer_lvl_table
+    wget https://raw.githubusercontent.com/nanoporetech/kmer_models/refs/heads/master/rna004/9mer_levels_v1.txt
     fi
     """
 }
@@ -30,7 +30,7 @@ process Resquiggle_Remora {
         // These are the paths to the input files
         path(pod5_files)
         path(bam_file)
-        val(kmer_lvl_table)
+        path(kmer_lvl_table)
     
         //The General variables for training data
         tuple val(basecalling), val(mod_mapping), val(modified_data), val(use_modified_region), val(training_out), val(mod_type), val(mod_pos), val(bases_before_mod)
