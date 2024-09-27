@@ -12,6 +12,7 @@ import argparse
 def argparser():
     parser = argparse.ArgumentParser(description="Parser for pod5Viewer input parameters")
 
+    parser.add_argument("--base_dir", required=True, type=str)
     # Required Input
     parser.add_argument("--bam_file_dir", required=True, type=str, help="Path to the BAM files")
     parser.add_argument("--pod5_dir", required=True, type=str, help="Path to the pod5 directory")
@@ -30,28 +31,32 @@ def argparser():
     parser.add_argument("--max_label_length", required=True, type=int)
     parser.add_argument("--time_segment", required=True, type=int)
     parser.add_argument("--shift", required=True, type=int)
+    parser.add_argument("--start_index", required=True, type=int)
+    parser.add_argument("--end_index", required=True, type=int)
 
     parser.add_argument("--mod_list", required=True, nargs="+")
 
     return parser
 
-def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, save_path, \
-    basecalling, mod_mapping, modified_data, take_mod_region, name_Save_file, Modified_base, \
+def Remora_resquigle_Generation_data(base_dir, data_path, bam_file_dir, level_table_file, save_path, \
+    basecalling, mod_mapping, modified_data, take_mod_region, name_save_file, Modified_base, \
     mod_pos_initial, start_base_resquigle, batch_size, max_label_length, time_segment, shift, \
-    start_index, end_index, mod_dictionary):
+    start_index, end_index, mod_list):
 
     ind_loop = 0
+    #print(bam_file_dir)
     bam_files = os.listdir(bam_file_dir)
-    print(bam_files)
+    #print(bam_files)
 
     for bam_file in bam_files:
-        bam_file = bam_folder + "/" + bam_file
-
+        #print(bam_file)
+        #print(ind_loop)
         #initial variable
 
         # /////// read the files //////
 
         pod5_dr = pod5.DatasetReader(data_path)
+        bam_file = bam_file_dir + "/" + bam_file
         bam_fh = io.ReadIndexedBam(bam_file)
 
         # /////// take the name of reads////
@@ -61,6 +66,12 @@ def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, 
         # /// define the function for resquile from Remora ///
         # // old version used for DNA. maybe DNA data has to be analysed again //
 
+        # debugged to here
+        if level_table_file == "4":
+            level_table_file = base_dir + "/data/5mer_levels_v1.txt"
+        else:
+            level_table_file = base_dir + "/data/9mer_levels_v1.txt"
+
         sig_map_refiner = refine_signal_map.SigMapRefiner(
                             kmer_model_filename=level_table_file,
                             do_rough_rescale=True,
@@ -68,16 +79,16 @@ def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, 
                             do_fix_guage=True)
         
         if mod_mapping:
-            labels = len(mod_dictionary)
+            labels = len(mod_list)
 
         if basecalling:
             labels = 4
 
-        curent_index = start_index
+        current_index = start_index
         for name_id in read_id[start_index: end_index]: #need to find a way to choose the ids.
 
-            curent_index += 1
-            print(curent_index)
+            current_index += 1
+            #print(current_index)
             seq_resquigle = ""
             position_adjusting = 0
             Error_read = False
@@ -162,7 +173,8 @@ def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, 
                 if mod_mapping:
                     
                     #modification_dict = {"G":2, "M":3, "I":4, "P":5}
-                    value_modification = int(mod_dictionary[Modfied_base])
+                    #value_modification = int(mod_dictionary[Modfied_base])
+                    value_modification = int(mod_list.index(Modified_base))
                     base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
 
                 if basecalling:
@@ -178,6 +190,9 @@ def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, 
                         start_resq = start_end_resquigle[k]
                         Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
                         Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
+
+
+                    # debugged till here
 
                     if mod_mapping and modified_data:
 
@@ -300,24 +315,26 @@ def Remora_resquigle_Generation_data(data_path, bam_file_dir, level_table_file, 
                                 train2_batch[m] = train2_for_batch
                                 output_batch[m] = output_for_batch
 
-                        file_name = name_save_file + f"{int(ind_loop)}_{int(current_index)}" + f"_{n}.npz"
-                        np.savez_compressed(os.path.join(save_path,file_name), 
+                        file_name = f"{int(ind_loop)}_{int(current_index)}" + f"_{n}_{Modified_base}.npz"
+                        np.savez_compressed(file_name, 
                                                 train_input = train1_batch,
                                                 train_input2 = train2_batch,
                                                 train_output = output_batch)
                                                     
                     # // save long rads enter in the quality check. maybe is not necessary
                 
-                except:
+                except Exception as e:
                     print("resquigle error")
+                    print(e)
         ind_loop += 1
             
     print("Resquggle Finished")
 
 if __name__ == "__main__":
-    args = argparser().parse_args()
-    print(args)
-    print(args.bam_file_dir)
-    print(args.mod_list)
 
-    #main(args)
+    args = argparser().parse_args()
+    
+    Remora_resquigle_Generation_data(args.base_dir, args.pod5_dir, args.bam_file_dir, args.kmer_lvl_table, "output", \
+        args.basecalling, args.mod_mapping, args.modified_data, args.take_mod_region, args.name_save_file, args.modified_base, \
+        args.mod_pos_initial, args.start_base_resquigle, args.batch_size, args.max_label_length, args.time_segment, args.shift, \
+        args.start_index, args.end_index, args.mod_list)

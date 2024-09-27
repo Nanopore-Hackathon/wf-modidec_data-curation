@@ -7,8 +7,8 @@ nextflow.enable.dsl=2
 process Resquiggle_Remora {
 
     label "modidec_dacu"
-    publishDir "${params.outdir}/", mode: "copy"
-    
+    publishDir "${params.outdir}/", overwrite: true, mode: 'copy', pattern: "*.npz"
+
     input:
         // These are the paths to the input files
         path(pod5_files)
@@ -23,13 +23,14 @@ process Resquiggle_Remora {
         val(mod_list)
     
     output:
-        //path("$params.outdir/*.npz"), emit:save_path
+        path("*.npz")
     
     script:
 
         """
     
         Remora_resquigle_generate_data.py \
+            --base_dir ${baseDir} \
             --pod5_dir $pod5_files \
             --bam_file_dir $bam_files \
             --kmer_lvl_table $kmer_lvl_table \
@@ -47,6 +48,8 @@ process Resquiggle_Remora {
             --max_label_length $max_seq_length \
             --time_segment $chunk_length \
             --shift $time_shift \
+            --start_index $start_read_number \
+            --end_index $end_read_number \
             \
             --mod_list $mod_list
             
