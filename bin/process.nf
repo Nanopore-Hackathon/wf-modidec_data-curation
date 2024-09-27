@@ -3,6 +3,23 @@
 // Using DSL-2
 nextflow.enable.dsl=2
 
+process load_kmer_tables {
+
+    input:
+    val(flowcell_type)
+    output:
+    path(kmer_lvl_table), emit:kmer_lvl_table
+    script:
+
+    //load kmer table from website
+    """
+    if [[ ${flowcell_type} == "RNA002" ]]; then
+	wget "https://github.com/nanoporetech/kmer_models/blob/master/legacy/legacy_r9.4_180mv_70bps_5mer_RNA/template_median69pA.model" \$kmer_lvl_table
+	else
+    wget "https://github.com/nanoporetech/kmer_models/blob/master/rna004/9mer_levels_v1.txt" \$kmer_lvl_table
+    fi
+    """
+}
 
 process Resquiggle_Remora {
 
@@ -26,7 +43,6 @@ process Resquiggle_Remora {
         path("*.npz")
     
     script:
-
         """
     
         Remora_resquigle_generate_data.py \
