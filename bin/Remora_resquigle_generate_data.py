@@ -18,10 +18,10 @@ def argparser():
     parser.add_argument("--pod5_dir", required=True, type=str, help="Path to the pod5 directory")
     parser.add_argument("--kmer_lvl_table", required=True, type=str, help="Path to the kmer level table")
     
-    parser.add_argument("--basecalling", required=True, type=bool)
-    parser.add_argument("--mod_mapping", required=True, type=bool)
-    parser.add_argument("--modified_data", required=True, type=bool)
-    parser.add_argument("--take_mod_region", required=True, type=bool)
+    parser.add_argument("--basecalling", required=True)
+    parser.add_argument("--mod_mapping", required=True)
+    parser.add_argument("--modified_data", required=True)
+    parser.add_argument("--take_mod_region", required=True)
     parser.add_argument("--name_save_file", required=True, type=str)
     parser.add_argument("--modified_base", required=True, type=str)
     parser.add_argument("--mod_pos_initial", required=True, type=int)
@@ -46,12 +46,18 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     #print(bam_file)
     #initial variable
 
+    
+    basecalling = basecalling == "true"
+    mod_mapping = mod_mapping == "true"
+    modified_data = modified_data == "true"
+    take_mod_region = take_mod_region == "true"
+    
     # /////// read the files //////
 
     pod5_dr = pod5.DatasetReader(data_path)
     bam_fh = io.ReadIndexedBam(bam_file)
 
-        # /////// take the name of reads////
+        # /////// take the name reads////
 
     read_id = bam_fh.read_ids
 
@@ -63,7 +69,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     # else:
     #     level_table_file = base_dir + "/data/9mer_levels_v1.txt"
 
-    print(level_table_file)
+    #print(level_table_file)
     level_table_file = level_table_file
 
     sig_map_refiner = refine_signal_map.SigMapRefiner(
@@ -101,7 +107,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
         try:
             #/// read data
             read_analysed = io.Read.from_pod5_and_alignment(pod5_read, bam_read, reverse_signal = flip)
-            print(read_analysed)
             # // resquigle the data with the refence
             read_analysed.set_refine_signal_mapping(sig_map_refiner, ref_mapping=True)
 
@@ -161,10 +166,12 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             if mod_mapping:
                     #modification_dict = {"G":2, "M":3, "I":4, "P":5}
                     #value_modification = int(mod_dictionary[Modfied_base])
+                print("MOD MAPPING")
                 value_modification = int(mod_list.index(Modified_base)) + 1
                 base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
 
             if basecalling:
+                print("BASECALLING")
                 base_dict_output = { "A":1, "C":2, "G":3, "T":4, "X":5}
                     
             base_dict = {"A":1, "C":2, "G":3, "T":4}
@@ -183,7 +190,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                         mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
 
                     else:
-                            
                         mod_position = 0
                             
                 if basecalling and modified_data:
@@ -231,7 +237,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                         probe_2 = probe_2[probe_2 != 0]
                         probe_2 = probe_2 - 1
                         
-                        print("Check 2 Passed")
                         try:
 
                             for kk in range(len(probe_1)):
@@ -271,7 +276,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                             probe_2 = probe_2[probe_2 != 0]
                             probe_2 = probe_2 - 1
 
-                            print("Passed Check 3")
                             try:
 
                                 for kk in range(len(probe_1)):
