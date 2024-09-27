@@ -7,12 +7,12 @@ nextflow.enable.dsl=2
 process Resquiggle_Remora {
 
     label "modidec_dacu"
-    publishDir "${params.outdir}/", overwrite: true, mode: 'copy', pattern: "*.npz"
+    publishDir "${params.outdir}/", overwrite: true, mode: 'move', pattern: "*.npz"
 
     input:
         // These are the paths to the input files
         path(pod5_files)
-        path(bam_files)
+        path(bam_file)
         val(kmer_lvl_table)
     
         //The General variables for training data
@@ -32,7 +32,7 @@ process Resquiggle_Remora {
         Remora_resquigle_generate_data.py \
             --base_dir ${baseDir} \
             --pod5_dir $pod5_files \
-            --bam_file_dir $bam_files \
+            --bam_file $bam_file \
             --kmer_lvl_table $kmer_lvl_table \
             \
             --basecalling $basecalling \
