@@ -11,7 +11,7 @@
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
             "description": "Mandatory Parameters to start the resquiggle analysis",
-            "required": ["pod5_files", "bam_files", "outdir", "kmer_lvl_table"],
+            "required": ["pod5_files", "bam_files", "outdir", "flowcell_type"],
             "properties": {
                 "pod5_files": {
                     "type": "string",
