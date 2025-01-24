@@ -78,13 +78,13 @@
                 "mod_list": {
                     "type": "string",
                     "title": "Modification Dictionary",
-                    "default": "M P I L",
-                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: M=m6A, G=Gm, I=Inosine, P=Pseudouridine"
+                    "default": "Gm m6A Ino Psi",
+                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: Gm, m6A, Ino, Psi"
                 },
                 "mod_type": {
                     "type": "string",
                     "title": "Modification Type",
-                    "default": "M",
+                    "default": "Gm",
                     "description": "Choose a key according to the modification dictionary indicating your modification type"
                 },
               	"mod_pos": {

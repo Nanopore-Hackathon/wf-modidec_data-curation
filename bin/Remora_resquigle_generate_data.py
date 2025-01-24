@@ -45,12 +45,38 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
     #print(bam_file)
     #initial variable
-
+    # print("Basecalling")
+    # print(basecalling)
+    # print(type(basecalling))
     
-    basecalling = basecalling == "true"
-    mod_mapping = mod_mapping == "true"
-    modified_data = modified_data == "true"
-    take_mod_region = take_mod_region == "true"
+    # print("Mod mapping")
+    # print(mod_mapping)
+    # print(type(mod_mapping))
+    
+    # print("Modified data")
+    # print(modified_data)
+    # print(type(modified_data))
+
+    if basecalling == "true":
+        basecalling = 1
+    else:
+        basecalling = 0
+        
+    if mod_mapping == "true":
+        mod_mapping = 1
+    else:
+        mod_mapping = 0
+    
+    if modified_data == "true":
+        modified_data = 1
+    else:
+        modified_data = 0
+        
+    if take_mod_region == "true":
+        take_mod_region = 1
+    else:
+        take_mod_region = 0
+
 
     # /////// read the files //////
 
@@ -85,7 +111,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     for name_id in read_id[old_start: end_index]: #need to find a way to choose the ids.
 
         start_index += 1
-        print(start_index)
         seq_resquigle = ""
         position_adjusting = 0
         Error_read = False
@@ -114,7 +139,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             Raw_signal = start_of_mapping.norm_signal
             seq_resquigle = start_of_mapping.seq
             start_end_resquigle = start_of_mapping.seq_to_sig_map
-            target_id = start_of_mapping.ref_reg.ctg
+            #target_id = start_of_mapping.ref_reg.ctg
 
                 # /// check if the modification position has to be adjusted ///
             position_adjusting =start_of_mapping.ref_reg.start
@@ -140,12 +165,11 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
         if take_mod_region:
             print("TAKING MOD REGION")
-            if high_threshold < val_total_seq and position_adjusting < mod_pos_initial and Error_read == False: 
+            if high_threshold < val_total_seq and position_adjusting < mod_pos_initial and not Error_read: 
                 start_analysis = True
 
         else:
-            if  Error_read == False:
-
+            if not Error_read:
                 start_analysis = True
 
 
@@ -156,7 +180,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             mod_pos = mod_pos_initial - position_adjusting - 1            
 
             if modified_data:
-                seq_resquigle_mod = seq_resquigle[:mod_pos] + "X" + seq_resquigle[mod_pos +1:] 
+                seq_resquigle_mod = seq_resquigle[:mod_pos] + "X" + seq_resquigle[mod_pos + 1:] 
 
             else:
                 seq_resquigle_mod = seq_resquigle
@@ -164,9 +188,14 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             if mod_mapping:
                     #modification_dict = {"G":2, "M":3, "I":4, "P":5}
                     #value_modification = int(mod_dictionary[Modfied_base])
-                print("MOD MAPPING")
+                #print("MOD MAPPING")
+                #mod_dictionairy = {mod_list[element]: element + 2 for element in range(len(mod_list))}
+                #print(mod_dictionairy)
+                #value_modification = int(mod_dictionairy[Modified_base])
+                #print(value_modification)
                 value_modification = int(mod_list.index(Modified_base)) + 2
                 base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
+            
                     
             base_dict = {"A":1, "C":2, "G":3, "T":4}
 
@@ -187,7 +216,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                         mod_position = 0
                             
 
-                if take_mod_region == True:
+                if take_mod_region:
                     minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
                     N_shift = int((time_segment + minus_start)/shift)
                 else:
@@ -199,7 +228,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     output_batch = np.zeros([batch_size, max_label_length, 1 + labels])
 
                     for m in range(batch_size):
-                        if take_mod_region == True:
+                        if take_mod_region:
                             midlle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
                             start = midlle_mod_position - n*batch_size*shift - m*shift
                             end = start + time_segment
@@ -240,12 +269,12 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 # the problem is only related to modified data.
 
                         try:
-
                             train1_batch[m] = Raw_signal[start:end]
                             train2_batch[m] = train2_for_batch
                             output_batch[m] = output_for_batch
 
                         except:
+                            
                             if mod_position < int(time_segment/2):                            
                                 start = mod_position
                                 end = start + time_segment
@@ -276,21 +305,58 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                     train2_for_batch[kk, probe_1[kk]] = 1
                                     output_for_batch[kk, probe_2[kk]] = 1
 
+
+                        # try:
+
+                        #     train1_batch[m] = Raw_signal[start:end]
+                        #     train2_batch[m] = train2_for_batch
+                        #     output_batch[m] = output_for_batch
+
+                        # except:
+
+                        #     if mod_position < int(time_segment/2):                            
+                        #         start = mod_position
+                        #         end = start + time_segment
+
+                        #     else:     
+                        #         start = mod_position - int(time_segment/2)
+                        #         end = start + time_segment
+
+                        #     probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
+                        #     probe_1 = probe_1[probe_1 != 0]
+                        #     probe_1 = probe_1 - 1
+
+                        #     probe_2 = np.argmax(Output_onehot[start:end,:], axis = -1)
+                        #     probe_2 = probe_2[probe_2 != 0]
+                        #     probe_2 = probe_2 - 1
+
+                        #     try:
+
+                        #         for kk in range(len(probe_1)):
+                                    
+                        #             train2_for_batch[kk, probe_1[kk]] = 1
+                        #             output_for_batch[kk, probe_2[kk]] = 1
+
+                        #     except:
+
+                        #         for kk in range(max_label_length):
+                                    
+                        #             train2_for_batch[kk, probe_1[kk]] = 1
+                        #             output_for_batch[kk, probe_2[kk]] = 1
+
+
                             train1_batch[m] = Raw_signal[start:end]
                             train2_batch[m] = train2_for_batch
                             output_batch[m] = output_for_batch
-
-                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}" + f"_{n}_{Modified_base}.npz"
-                    np.savez_compressed(file_name, 
-                                                train_input = train1_batch,
-                                                train_input2 = train2_batch,
-                                                train_output = output_batch)
-                                                                    
+                        print(train1_batch[m])
+                        print(train2_batch[m])
+                        print(output_batch[m])
+                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{Modified_base}.npz"
+                    np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
             except Exception as e:
-                print("resquigle error")
+                print("resquiggle error")
                 print(e)   
-         
-    print("Resquggle Finished")
+    print("Resquiggleing Finished")
 
 if __name__ == "__main__":
 

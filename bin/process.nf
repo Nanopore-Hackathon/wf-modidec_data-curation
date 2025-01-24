@@ -44,7 +44,6 @@ process Resquiggle_Remora {
     
     script:
         """
-    
         Remora_resquigle_generate_data.py \
             --base_dir ${baseDir} \
             --pod5_dir $pod5_files \
