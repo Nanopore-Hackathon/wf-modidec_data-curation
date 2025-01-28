@@ -85,13 +85,13 @@
                     "type": "string",
                     "title": "Modification Type",
                     "default": "Gm",
-                    "description": "Choose a key according to the modification dictionary indicating your modification type"
+                    "description": "Choose a key according to the modification dictionary indicating your modification type. If you have several modifications you can use a space separated string (Gm Ino m6A)."
                 },
               	"mod_pos": {
-                    "type": "integer",
+                    "type": "string",
                     "title": "Location of Modification",
-                    "default":92,
-                    "description": "Position of the modification in the reference sequence"
+                    "default":"92",
+                    "description": "Position of the modification in the reference sequence. Use a space separated string to indicate where the modifications form above are located (example 92 93 94)"
                 },
                 "bases_before_mod": {
                     "type": "integer",
@@ -134,14 +134,14 @@
                 },
                 "start_read_num": {
                     "type": "integer",
-                    "title": "To update",
+                    "title": "Start index on bamfile",
                     "default":0,
                     "description": "Select the start entry from the .bam file"
                 },
                 "end_read_num": {
                     "type": "integer",
-                    "title": "To update",
-                    "default":1000,
+                    "title": "Stop index on bamfile",
+                    "default":10000,
                     "description": "Select the end entry from the .bam file"
                 }
             }

@@ -22,10 +22,83 @@ println """\
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 // include { process_name } from "process_file"
-include { Resquiggle_Remora } from "./bin/process.nf"
-include { load_kmer_tables } from "./bin/process.nf"
+//include { Resquiggle_Remora } from "./bin/process.nf"
+//include { load_kmer_tables } from "./bin/process.nf"
 
 // WorkflowMain.initialise(workflow, params, log)
+process load_kmer_tables {
+
+    input:
+    val(flowcell_type)
+    output:
+    path("*.txt"), emit:kmer_lvl_table
+    script:
+
+    //load kmer table from website
+    """
+    if [[ ${flowcell_type} == "RNA002" ]]; then
+	wget https://raw.githubusercontent.com/nanoporetech/kmer_models/refs/heads/master/rna_r9.4_180mv_70bps/5mer_levels_v1.txt
+	else
+    wget https://raw.githubusercontent.com/nanoporetech/kmer_models/refs/heads/master/rna004/9mer_levels_v1.txt
+    fi
+    """
+}
+
+process Resquiggle_Remora {
+
+    label "modidec_dacu"
+    publishDir "${params.outdir}/", overwrite: true, mode: 'move', pattern: "*.npz"
+
+    input:
+        // These are the paths to the input files
+        path(pod5_files)
+        path(bam_file)
+        path(kmer_lvl_table)
+    
+        //The General variables for training data
+        tuple val(basecalling), val(mod_mapping), val(modified_data), val(use_modified_region), val(training_out), val(mod_type), val(mod_pos), val(bases_before_mod)
+        
+        //The Segmentation variables for training data
+        tuple val(batch_size), val(max_seq_length), val(chunk_length), val(time_shift), val(start_read_number), val(end_read_number)
+        val(mod_list)
+    
+    output:
+        path("*.npz")
+    
+    script:
+        """
+        Remora_resquigle_generate_data.py \
+            --base_dir ${baseDir} \
+            --pod5_dir $pod5_files \
+            --bam_file $bam_file \
+            --kmer_lvl_table $kmer_lvl_table \
+            \
+            --basecalling $basecalling \
+            --mod_mapping $mod_mapping \
+            --modified_data $modified_data \
+            --take_mod_region $use_modified_region \
+            --name_save_file $training_out \
+            --modified_base $mod_type \
+            --mod_pos_initial $mod_pos \
+            --start_base_resquigle $bases_before_mod \
+            \
+            --batch_size $batch_size \
+            --max_label_length $max_seq_length \
+            --time_segment $chunk_length \
+            --shift $time_shift \
+            --start_index $start_read_number \
+            --end_index $end_read_number \
+            \
+            --mod_list $mod_list
+            
+        """
+
+    stub:
+    """
+       mkdir output
+       touch output/${training_out}.npz
+    """
+}
 
 
 workflow {

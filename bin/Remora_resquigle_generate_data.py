@@ -23,8 +23,8 @@ def argparser():
     parser.add_argument("--modified_data", required=True)
     parser.add_argument("--take_mod_region", required=True)
     parser.add_argument("--name_save_file", required=True, type=str)
-    parser.add_argument("--modified_base", required=True, type=str)
-    parser.add_argument("--mod_pos_initial", required=True, type=int)
+    parser.add_argument("--modified_base", required=True, nargs="+")
+    parser.add_argument("--mod_pos_initial", required=True, nargs="+", type = int)
     parser.add_argument("--start_base_resquigle", required=True, type=int)
 
     parser.add_argument("--batch_size", required=True, type=int)
@@ -108,7 +108,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
     old_start = start_index
     
-    for name_id in read_id[old_start: end_index]: #need to find a way to choose the ids.
+    for name_id in read_id[old_start: end_index]: 
 
         start_index += 1
         seq_resquigle = ""
@@ -155,9 +155,13 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             mod_pos = mod_pos_initial - position_adjusting - 1            
             max_signal_length = Raw_signal[0 : mod_pos + time_segment]
             """
-            
+        ########################Test############################
+        Modified_base = ["Gm","m6A","Ino"]
+        mod_pos_initial = [92,93,96]
+        ########################################################
+        
         val_total_seq = position_adjusting + len(seq_resquigle)
-        high_threshold = mod_pos_initial + 20
+        high_threshold = max(mod_pos_initial) + 20
             
             # // select only high score quality, extrapolate signal and save data //
 
@@ -165,56 +169,66 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
         if take_mod_region:
             print("TAKING MOD REGION")
-            if high_threshold < val_total_seq and position_adjusting < mod_pos_initial and not Error_read: 
+            if high_threshold < val_total_seq and position_adjusting < max(mod_pos_initial) and not Error_read: 
                 start_analysis = True
 
         else:
             if not Error_read:
                 start_analysis = True
 
-
+        
         if start_analysis: # ///////// TO CHECK !!! ////////////
             Signal_onehot = np.zeros([len(Raw_signal),4 + 1])
             Output_onehot = np.zeros([len(Raw_signal), labels + 2])
-
-            mod_pos = mod_pos_initial - position_adjusting - 1            
-
-            if modified_data:
-                seq_resquigle_mod = seq_resquigle[:mod_pos] + "X" + seq_resquigle[mod_pos + 1:] 
-
-            else:
-                seq_resquigle_mod = seq_resquigle
-
-            if mod_mapping:
-                    #modification_dict = {"G":2, "M":3, "I":4, "P":5}
-                    #value_modification = int(mod_dictionary[Modfied_base])
-                #print("MOD MAPPING")
-                #mod_dictionairy = {mod_list[element]: element + 2 for element in range(len(mod_list))}
-                #print(mod_dictionairy)
-                #value_modification = int(mod_dictionairy[Modified_base])
-                #print(value_modification)
-                value_modification = int(mod_list.index(Modified_base)) + 2
-                base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":value_modification} # variable
+            base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":{}}
             
-                    
+            for m_base in Modified_base:
+                if mod_mapping:
+                    value_modification = int(mod_list.index(m_base)) + 2
+                    # variable
+                    base_dict_output["X"][m_base] = value_modification
+                
             base_dict = {"A":1, "C":2, "G":3, "T":4}
-
-            try:
-                for k in range(len(seq_resquigle)):
-                    start_resq = start_end_resquigle[k]
-                    Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
-                    Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
-
+            seq_resquigle_mod = seq_resquigle 
+            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)): 
+                mod_pos = mod_pos_init - position_adjusting - 1          
+                if modified_data:
+                    seq_resquigle_mod = seq_resquigle_mod[:mod_pos] + "X" + seq_resquigle_mod[mod_pos + 1:]
+                else:
+                    seq_resquigle_mod = seq_resquigle
+                    
+            #print(seq_resquigle_mod)        
+            #print(base_dict_output["X"])
+            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)): 
+                mod_pos = mod_pos_init - position_adjusting - 1
+                for k,base_identitiy in enumerate(seq_resquigle_mod):
+                    if base_identitiy != "X":
+                        start_resq = start_end_resquigle[k]
+                        Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
+                        Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
+                if seq_resquigle_mod[mod_pos] == "X":
+                    start_resq = start_end_resquigle[mod_pos]
+                    Signal_onehot[start_resq,base_dict[seq_resquigle[mod_pos]]] = 1
+                    Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[mod_pos]][m_base]] = 1
+            #print(Output_onehot)
+            #print("Overcame second loop")
+            modification_counter = {}
+            for m_base in Modified_base:
+                modification_counter[m_base] = 0               
+            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)):         
+                mod_pos = mod_pos_init - position_adjusting - 1
+                
+                # try:
                 if mod_mapping and modified_data:
-                    mod_position = np.where(Output_onehot[:,value_modification] > 0)[0][0]
-
+                    mod_position = np.where(Output_onehot[:,base_dict_output["X"][m_base]] > 0)[0][modification_counter[m_base]]
+                    print(mod_position)
+                    modification_counter[m_base] += 1 
+                        
                 if mod_mapping and not modified_data:
                     if take_mod_region:
                         mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
-
                     else:
                         mod_position = 0
-                            
 
                 if take_mod_region:
                     minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
@@ -229,8 +243,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
                     for m in range(batch_size):
                         if take_mod_region:
-                            midlle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
-                            start = midlle_mod_position - n*batch_size*shift - m*shift
+                            middle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
+                            start = middle_mod_position - n*batch_size*shift - m*shift
                             end = start + time_segment
 
                         else:
@@ -305,58 +319,24 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                     train2_for_batch[kk, probe_1[kk]] = 1
                                     output_for_batch[kk, probe_2[kk]] = 1
 
-
-                        # try:
-
-                        #     train1_batch[m] = Raw_signal[start:end]
-                        #     train2_batch[m] = train2_for_batch
-                        #     output_batch[m] = output_for_batch
-
-                        # except:
-
-                        #     if mod_position < int(time_segment/2):                            
-                        #         start = mod_position
-                        #         end = start + time_segment
-
-                        #     else:     
-                        #         start = mod_position - int(time_segment/2)
-                        #         end = start + time_segment
-
-                        #     probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
-                        #     probe_1 = probe_1[probe_1 != 0]
-                        #     probe_1 = probe_1 - 1
-
-                        #     probe_2 = np.argmax(Output_onehot[start:end,:], axis = -1)
-                        #     probe_2 = probe_2[probe_2 != 0]
-                        #     probe_2 = probe_2 - 1
-
-                        #     try:
-
-                        #         for kk in range(len(probe_1)):
-                                    
-                        #             train2_for_batch[kk, probe_1[kk]] = 1
-                        #             output_for_batch[kk, probe_2[kk]] = 1
-
-                        #     except:
-
-                        #         for kk in range(max_label_length):
-                                    
-                        #             train2_for_batch[kk, probe_1[kk]] = 1
-                        #             output_for_batch[kk, probe_2[kk]] = 1
-
-
                             train1_batch[m] = Raw_signal[start:end]
                             train2_batch[m] = train2_for_batch
                             output_batch[m] = output_for_batch
                         print(train1_batch[m])
                         print(train2_batch[m])
                         print(output_batch[m])
-                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{Modified_base}.npz"
+                    modified_bases_string = ""
+                    if modified_data:
+                        for m_base in Modified_base:
+                            modified_bases_string += f"{m_base}_"
+                    else:
+                        modified_bases_string = "unmodified"
+                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}.npz"
                     np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
-            except Exception as e:
-                print("resquiggle error")
-                print(e)   
-    print("Resquiggleing Finished")
+                # except Exception as e:
+                #     print("resquiggle error")
+                #     print(e)   
+        print("Resquiggleing Finished")
 
 if __name__ == "__main__":
 
