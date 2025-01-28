@@ -49,8 +49,8 @@ Define the following variables:
 3. Do you want to use the modified region for data training ? (Usually: Yes. Will create data chunks around the region of interest)
 4. Which name should your output files have ? (Variable: Training Output Directory)
 5. Define a modification dictionairy: (Variable: Modification Dictionary, Default -> "Gm m6A Ino Psi", This dictionairy defines the multiple modicifaction classification space and should be the same for all training instances the model will be trained with.)
-6. Define which modification your construct carries. (Variable: Modification Type)
-7. At which position on your reference transcript is the modification positioned ? (Variable: Location of Modification)
+6. Define which modification your construct carries. (Variable: Modification Type, Default: "Gm", Can be extended to use several bases e.g. "Gm Gm m6A Ino", If you have unmodified data you should still mention the modification type of your modified data to extract data from similar positions.)
+7. At which position on your reference transcript is the modification positioned ? (Variable: Location of Modification,Default: "92", Can be extended to match the position of the modified bases above e.g "92 93 100 101",If you have unmodified data you should still mention the positions of modified bases in your modified data to extract data from similar positions.)
 8. Do you want to add some chunks around you modification position to create some unmodified examples in the sorroundings ? (Variable: Number of Bases before Modification) 
 
 
@@ -62,6 +62,12 @@ Define the following variables:
 5. Which bamfile entries should be taken ? This options enbales the user to extract a resonable amount of training data for a given construct.
    - Define start index on bamfile (Variable: Start index on bamfile, Default: 0)
    - Define end index on bamfile (Variable: End index on bamfile, Default: 10000)
+  
+After you chose the parameters for data curation click on Launch to start the process.
+
+
+
+
 
 
 
