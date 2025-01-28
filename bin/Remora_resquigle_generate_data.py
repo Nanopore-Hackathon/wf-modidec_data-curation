@@ -155,10 +155,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             mod_pos = mod_pos_initial - position_adjusting - 1            
             max_signal_length = Raw_signal[0 : mod_pos + time_segment]
             """
-        ########################Test############################
-        Modified_base = ["Gm","m6A","Ino"]
-        mod_pos_initial = [92,93,96]
-        ########################################################
         
         val_total_seq = position_adjusting + len(seq_resquigle)
         high_threshold = max(mod_pos_initial) + 20
