@@ -1,47 +1,67 @@
-# wf-modidec (Part 1: data curation)
+# Modidec - RNA modification detector and classifier
+ModiDeC is a customizable neural network to identify RNA modifications from Oxford Nanopore Technology (ONT) based direct RNA sequencing data. ModiDeC combines LSTM and a newly designed inception-res-net blocks for multi-modification-classification. Modidec is composed of three Epi2ME integratable tools (data curation,network training and analysis), allowing researchers to train the multi-modification-classification model on synthesized RNA strands mimicking physiological relevant motifs and modification patterns on transcripts of interest to investigate modification ratios of transcript derived from physiological data. During the data curation step of Modidec data derived from ONT based direct RNA sequencing experiments (RNA002 or RNA004) can be preprocessed to suit the succeeding model training step. During model training the network can be trained on the preprocessed data to optimally learn motif and modification patterns of the transcript of interest. The trained model can then be used in the analysis step of modidec to investigate modification ratios in physiological derived data.
 
-## Introduction
-In this directory you find part 1 of the code from ModiDec. The scripts located in ./bin facilitate the data curation. ...
+Here the data curation part is implemented. Please visit [wf-modidec_training](https://github.com/Nanopore-Hackathon/wf-modidec_training) and [wf-modidec_analysis](https://github.com/Nanopore-Hackathon/wf-modidec_analysis) to find the complete toolset. 
 
-### Functionality Overview
-Below is a graphical overview of suggested routes through the pipeline depending on the desired output.
+## Requirements
 
-[image]
+Install dependencies on your system:
+   -  Install [`Epi2Me Desktop`](https://labs.epi2me.io) (v5.1.14 or later)
+   -  Install [`Miniconda`](https://conda.io/miniconda.html)
+   -  Install [`Docker`](https://conda.io/miniconda.html)
+   -  Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=23.10.0`)
+   -  Install samtools and minimap
+   -  Make sure your [nvidia GPU drivers](https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/#ubuntu-installation) are installed and functional.
 
-
-## Guideline
-Key aim: Convert the scripts into a Nextflow pipeline compatible with Epi2Me.
-
-1. Get your system up and ready
-    - Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=23.10.0`)
-    - Install [`Miniconda`](https://conda.io/miniconda.html)
-    - Install [`Docker`](https://conda.io/miniconda.html)
-    - Install [`Epi2Me Desktop`](https://labs.epi2me.io) (v5.1.14 or later)
-    - Clone the Github repository (we recommend the GitHub Desktop client)
-
-
-2. Translate the functions and logic into Nextflow processes and ultimately a Nextflow pipeline
-    - Please check the repository and README.md of wf-modidec_analysis to get some hints about the synthax and folder structure of an Epi2Me workflow
-    - Extract the variables that will be needed to run data curation (have a look at ./bin/Resquigle_remora_GUI.py)
-    - Define a set of variable names that will occur in all the scripts (e.g. nextflow_schema.json, ./bin/Resquigle_remora_GUI.py)
-    - Remove GUI features from ./bin/Resquigle_remora_GUI.py and implement a script that can be started via command line tool. We recommend implementing an argparser. (Check the argparser in wf-modidec_analysis/bin)
-    - Implement a process in main.nf, that takes all necessary variables as input and starts the changed ./bin/Resquigle_remora_GUI.py script. Check which files you want to write to the filesystem and define them in the output section. Define a PublishDir to write the output files to your filesystem. Assign the label modidec to the process.
-    - Implement a workflow in main.nf which calls the defined process and assign the right input variables to it.
-    - Define a test config.yaml file to test the code without running it in Epi2Me. Take the config.yaml of the wf-modidec_analysis repository as template. 
-    - In nextflow.config assign a label to the Docker container "stegiopast/modidec:latest" to enable the modidec label feature. (check wf-modidec_analysis/nextflow.config) 
-    - Test if the pipeline runs through, when starting it via console. (nextflow run main.nf -params-file config.yaml) Test data can be found in folder ./bin/data/
-
-3. Convert the GUI into nextflow_schema.json format for Epi2Me integration
-    - Define the datatype and description for each variable that needs to be taken as input for the nextflow pipeline.
-    - make epi2melabs/workflows/modidec directory 
-    - Copy the wf-modidec_training repository into epi2melabs/workflows/modidec
-    - Open Epi2Me and check if the repository occurs in the workflow section  
+Import the workflow in Epi2Me:
+   -  Open Epi2Me
+   -  Navigate to Launch
+   -  Click on import workflow -> Import from Github
+   -  Paste https://github.com/Nanopore-Hackathon/wf-modidec_data-curation into the Edit line
+   -  Click on Download
+   -  The repository should now appear on the workflow list in Launch
 
 
-4. Test and debug pipeline in Epi2Me using test data
+## Instructions for data curation
 
-## Credits & License
+### Preparation
+Before you use the data curation step make sure you basecalled your data and in the following align your data to a fasta file contianing only the transcript of interest. Make sure you set all necessary flags.
+Use the following command:
 
-This code is provided by Dr. Nicolo Alagna and the Computational Systems Genetics Group of the University Medical Center of Mainz. © 2024 All rights reserved.
+```bash
+dorado basecaller sup path_to_folder/*.pod5 --emit-moves |
+samtools fastq -T "*" | minimap2 -y --MD -ax map-ont path_to_reference/single_trancript_reference.fasta - |
+samtools view -b -F 4 > output_name.bam
+```
 
-For the purpose of the Nanopore Hackathon, participants and collaborators of the event are granted a limited, non-exclusive, non-transferable license to use and modify the Applications for their intended purpose during the Time of the Event. Any further unauthorized reproduction, distribution, modification or publication of the Applications or their contents violates intellectual property rights and is strictly prohibited. For more please see the [Terms and Conditions](https://drive.google.com/file/d/18WN3YRoY9YvpYq6RCtwUQre-VAbN7jH6/view?usp=sharing) of the event.
+Once you finished the alignment the data curation can be performed. Navigate to Launch on Epi2Me and click ont wf-modidec_data-curation.
+Define the following variables:
+
+### Input Parameters
+1. pod5 folder 
+2. bam files folder 
+3. output directory
+4. flowcell type (RNA002 or RNA004)
+
+### Data Parameters
+1. Map a modification on your construct ? (Usually: Yes, Should be also yes if your construct is unmodified. Since the network training will focus on a specific region.)
+2. Is your construct modified ?
+3. Do you want to use the modified region for data training ? (Usually: Yes. Will create data chunks around the region of interest)
+4. Which name should your output files have ? (Variable: Training Output Directory)
+5. Define a modification dictionairy: (Variable: Modification Dictionary, Default -> "Gm m6A Ino Psi", This dictionairy defines the multiple modicifaction classification space and should be the same for all training instances the model will be trained with.)
+6. Define which modification your construct carries. (Variable: Modification Type)
+7. At which position on your reference transcript is the modification positioned ? (Variable: Location of Modification)
+8. Do you want to add some chunks around you modification position to create some unmodified examples in the sorroundings ? (Variable: Number of Bases before Modification) 
+
+
+### Segmentation Parameters
+1. How many chunks should be included into a single output file in .npz format? (Variable: Batch size, Default: 16)
+2. How many bases at maximum should a single datachunk cover on your reference transcript ? (Variable: Maximum sequence length, Default: 40)
+3. What is the chunksize (current measurements over time) of the networks receptive field/sliding window? (Variable: Number of chunks, Default: 400)
+4. In which range should the sliding window move over the data ? (Variable: Time shift, Default: 25)
+5. Which bamfile entries should be taken ? This options enbales the user to extract a resonable amount of training data for a given construct.
+   - Define start index on bamfile (Variable: Start index on bamfile, Default: 0)
+   - Define end index on bamfile (Variable: End index on bamfile, Default: 10000)
+
+
+
