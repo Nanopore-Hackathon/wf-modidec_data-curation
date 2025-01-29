@@ -186,13 +186,13 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                 
             base_dict = {"A":1, "C":2, "G":3, "T":4}
             seq_resquigle_mod = seq_resquigle 
-            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)): 
+            for m_base, mod_pos_init in zip(Modified_base,mod_pos_initial): 
                 mod_pos = mod_pos_init - position_adjusting - 1          
                 if modified_data:
                     seq_resquigle_mod = seq_resquigle_mod[:mod_pos] + "X" + seq_resquigle_mod[mod_pos + 1:]
                 else:
                     seq_resquigle_mod = seq_resquigle
-            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)): 
+            for m_base, mod_pos_init in zip(Modified_base,mod_pos_initial): 
                 mod_pos = mod_pos_init - position_adjusting - 1
                 for k,base_identitiy in enumerate(seq_resquigle_mod):
                     if base_identitiy != "X":
@@ -206,12 +206,13 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             modification_counter = {}
             for m_base in Modified_base:
                 modification_counter[m_base] = 0               
-            for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)):         
+            for m_base, mod_pos_init in zip(Modified_base,mod_pos_initial):         
                 mod_pos = mod_pos_init - position_adjusting - 1
-                
                 try:
                     if mod_mapping and modified_data:
                         mod_position = np.where(Output_onehot[:,base_dict_output["X"][m_base]] > 0)[0][modification_counter[m_base]]
+                        print(mod_position, type(mod_position))
+                        #mod_position = np.where(Output_onehot[:1,:] > 0)[0][modification_index]
                         modification_counter[m_base] += 1 
                             
                     if mod_mapping and not modified_data:
@@ -264,7 +265,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                     output_for_batch[kk, probe_2[kk]] = 1
 
                             except:
-
                                 for kk in range(max_label_length):                                
                                     train2_for_batch[kk, probe_1[kk]] = 1
                                     output_for_batch[kk, probe_2[kk]] = 1
@@ -278,7 +278,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 output_batch[m] = output_for_batch
 
                             except:
-                                
                                 if mod_position < int(time_segment/2):                            
                                     start = mod_position
                                     end = start + time_segment
@@ -303,7 +302,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                         output_for_batch[kk, probe_2[kk]] = 1
 
                                 except:
-
                                     for kk in range(max_label_length):
                                                 
                                         train2_for_batch[kk, probe_1[kk]] = 1
@@ -314,16 +312,18 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 output_batch[m] = output_for_batch
                         modified_bases_string = ""
                         if modified_data:
-                            for m_base in Modified_base:
-                                modified_bases_string += f"{m_base}_"
+                            for temp_base in Modified_base:
+                                modified_bases_string += f"{temp_base}_"
                         else:
                             modified_bases_string = "unmodified"
+                        #print(Modified_base)
+                        print(f"{m_base}")
                         file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}_focus_{m_base}.npz"
                         np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
                 except Exception as e:
                     print("resquiggle error")
                     print(e)   
-        print("Resquiggleing Finished")
+    print("Resquiggleing Finished")
 
 if __name__ == "__main__":
 
