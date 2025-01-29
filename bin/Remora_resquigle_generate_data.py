@@ -192,9 +192,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     seq_resquigle_mod = seq_resquigle_mod[:mod_pos] + "X" + seq_resquigle_mod[mod_pos + 1:]
                 else:
                     seq_resquigle_mod = seq_resquigle
-                    
-            #print(seq_resquigle_mod)        
-            #print(base_dict_output["X"])
             for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)): 
                 mod_pos = mod_pos_init - position_adjusting - 1
                 for k,base_identitiy in enumerate(seq_resquigle_mod):
@@ -206,92 +203,50 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     start_resq = start_end_resquigle[mod_pos]
                     Signal_onehot[start_resq,base_dict[seq_resquigle[mod_pos]]] = 1
                     Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[mod_pos]][m_base]] = 1
-            #print(Output_onehot)
-            #print("Overcame second loop")
             modification_counter = {}
             for m_base in Modified_base:
                 modification_counter[m_base] = 0               
             for modification_index, (m_base, mod_pos_init) in enumerate(zip(Modified_base,mod_pos_initial)):         
                 mod_pos = mod_pos_init - position_adjusting - 1
                 
-                # try:
-                if mod_mapping and modified_data:
-                    mod_position = np.where(Output_onehot[:,base_dict_output["X"][m_base]] > 0)[0][modification_counter[m_base]]
-                    print(mod_position)
-                    modification_counter[m_base] += 1 
-                        
-                if mod_mapping and not modified_data:
-                    if take_mod_region:
-                        mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
-                    else:
-                        mod_position = 0
-
-                if take_mod_region:
-                    minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
-                    N_shift = int((time_segment + minus_start)/shift)
-                else:
-                    N_shift = int((len(Raw_signal) - time_segment)/shift)
-
-                for n in range(int(N_shift/batch_size)):
-                    train1_batch = np.zeros([batch_size, time_segment])
-                    train2_batch = np.zeros([batch_size, max_label_length, 4])
-                    output_batch = np.zeros([batch_size, max_label_length, 1 + labels])
-
-                    for m in range(batch_size):
-                        if take_mod_region:
-                            middle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
-                            start = middle_mod_position - n*batch_size*shift - m*shift
-                            end = start + time_segment
-
-                        else:
-                            start = n*batch_size*shift + m*shift
-                            end = start + time_segment
-
-                        output_for_batch = np.zeros([max_label_length,1 + labels])
-                        train2_for_batch = np.zeros([max_label_length,4])
-
-                                # // here I am using a trick. All the bases has no zero value
-                                # making again the one-hot into an array and removing the 0 values,
-                                # I obtain the index of the final one-hot sequence for train2 and output
-
-                        probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
-                        probe_1 = probe_1[probe_1 != 0]
-                        probe_1 = probe_1 - 1
-
-                        probe_2 = np.argmax(Output_onehot[start:end,:], axis = -1)
-                        probe_2 = probe_2[probe_2 != 0]
-                        probe_2 = probe_2 - 1
-                        
-                        try:
-
-                            for kk in range(len(probe_1)):
-                                        
-                                train2_for_batch[kk, probe_1[kk]] = 1
-                                output_for_batch[kk, probe_2[kk]] = 1
-
-                        except:
-
-                            for kk in range(max_label_length):                                
-                                train2_for_batch[kk, probe_1[kk]] = 1
-                                output_for_batch[kk, probe_2[kk]] = 1
-
-                                # try/expect is places for data that are too short for storage
-                                # the problem is only related to modified data.
-
-                        try:
-                            train1_batch[m] = Raw_signal[start:end]
-                            train2_batch[m] = train2_for_batch
-                            output_batch[m] = output_for_batch
-
-                        except:
+                try:
+                    if mod_mapping and modified_data:
+                        mod_position = np.where(Output_onehot[:,base_dict_output["X"][m_base]] > 0)[0][modification_counter[m_base]]
+                        modification_counter[m_base] += 1 
                             
-                            if mod_position < int(time_segment/2):                            
-                                start = mod_position
+                    if mod_mapping and not modified_data:
+                        if take_mod_region:
+                            mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
+                        else:
+                            mod_position = 0
+
+                    if take_mod_region:
+                        minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
+                        N_shift = int((time_segment + minus_start)/shift)
+                    else:
+                        N_shift = int((len(Raw_signal) - time_segment)/shift)
+
+                    for n in range(int(N_shift/batch_size)):
+                        train1_batch = np.zeros([batch_size, time_segment])
+                        train2_batch = np.zeros([batch_size, max_label_length, 4])
+                        output_batch = np.zeros([batch_size, max_label_length, 1 + labels])
+
+                        for m in range(batch_size):
+                            if take_mod_region:
+                                middle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
+                                start = middle_mod_position - n*batch_size*shift - m*shift
                                 end = start + time_segment
 
-                            else:     
-                                start = mod_position - int(time_segment/2)
+                            else:
+                                start = n*batch_size*shift + m*shift
                                 end = start + time_segment
+
+                            output_for_batch = np.zeros([max_label_length,1 + labels])
+                            train2_for_batch = np.zeros([max_label_length,4])
+
+                                    # // here I am using a trick. All the bases has no zero value
+                                    # making again the one-hot into an array and removing the 0 values,
+                                    # I obtain the index of the final one-hot sequence for train2 and output
 
                             probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
                             probe_1 = probe_1[probe_1 != 0]
@@ -300,7 +255,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                             probe_2 = np.argmax(Output_onehot[start:end,:], axis = -1)
                             probe_2 = probe_2[probe_2 != 0]
                             probe_2 = probe_2 - 1
-
+                            
                             try:
 
                                 for kk in range(len(probe_1)):
@@ -310,28 +265,64 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
                             except:
 
-                                for kk in range(max_label_length):
-                                            
+                                for kk in range(max_label_length):                                
                                     train2_for_batch[kk, probe_1[kk]] = 1
                                     output_for_batch[kk, probe_2[kk]] = 1
 
-                            train1_batch[m] = Raw_signal[start:end]
-                            train2_batch[m] = train2_for_batch
-                            output_batch[m] = output_for_batch
-                        print(train1_batch[m])
-                        print(train2_batch[m])
-                        print(output_batch[m])
-                    modified_bases_string = ""
-                    if modified_data:
-                        for m_base in Modified_base:
-                            modified_bases_string += f"{m_base}_"
-                    else:
-                        modified_bases_string = "unmodified"
-                    file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}.npz"
-                    np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
-                # except Exception as e:
-                #     print("resquiggle error")
-                #     print(e)   
+                                    # try/expect is places for data that are too short for storage
+                                    # the problem is only related to modified data.
+
+                            try:
+                                train1_batch[m] = Raw_signal[start:end]
+                                train2_batch[m] = train2_for_batch
+                                output_batch[m] = output_for_batch
+
+                            except:
+                                
+                                if mod_position < int(time_segment/2):                            
+                                    start = mod_position
+                                    end = start + time_segment
+
+                                else:     
+                                    start = mod_position - int(time_segment/2)
+                                    end = start + time_segment
+
+                                probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
+                                probe_1 = probe_1[probe_1 != 0]
+                                probe_1 = probe_1 - 1
+
+                                probe_2 = np.argmax(Output_onehot[start:end,:], axis = -1)
+                                probe_2 = probe_2[probe_2 != 0]
+                                probe_2 = probe_2 - 1
+
+                                try:
+
+                                    for kk in range(len(probe_1)):
+                                                
+                                        train2_for_batch[kk, probe_1[kk]] = 1
+                                        output_for_batch[kk, probe_2[kk]] = 1
+
+                                except:
+
+                                    for kk in range(max_label_length):
+                                                
+                                        train2_for_batch[kk, probe_1[kk]] = 1
+                                        output_for_batch[kk, probe_2[kk]] = 1
+
+                                train1_batch[m] = Raw_signal[start:end]
+                                train2_batch[m] = train2_for_batch
+                                output_batch[m] = output_for_batch
+                        modified_bases_string = ""
+                        if modified_data:
+                            for m_base in Modified_base:
+                                modified_bases_string += f"{m_base}_"
+                        else:
+                            modified_bases_string = "unmodified"
+                        file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}_focus_{m_base}.npz"
+                        np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
+                except Exception as e:
+                    print("resquiggle error")
+                    print(e)   
         print("Resquiggleing Finished")
 
 if __name__ == "__main__":
