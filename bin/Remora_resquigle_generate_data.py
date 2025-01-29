@@ -316,8 +316,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 modified_bases_string += f"{temp_base}_"
                         else:
                             modified_bases_string = "unmodified"
-                        #print(Modified_base)
-                        print(f"{m_base}")
                         file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}_focus_{m_base}.npz"
                         np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
                 except Exception as e:
