@@ -94,7 +94,7 @@ process Resquiggle_Remora {
             total=\$(ls ./*.npz | wc -l)
             count=\$((\$total * 80 / 100))
             shuf -e ./*.npz | head -n \$count > filelist.txt
-            for file in filelist.txt
+            for file in \$(cat filelist.txt)
             do 
                 mv \$file training_data/
             done
