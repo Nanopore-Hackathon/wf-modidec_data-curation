@@ -11,7 +11,7 @@
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
             "description": "Mandatory Parameters to start the resquiggle analysis",
-            "required": ["pod5_files", "bam_files", "outdir", "flowcell_type"],
+            "required": ["pod5_files", "outdir", "flowcell_type","reference_fasta"],
             "properties": {
                 "pod5_files": {
                     "type": "string",
@@ -20,18 +20,18 @@
                     "title": "Raw Data Directory (.pod5 files)",
                     "description": "Input directory containing .pod5 files"
                 },
-                "bam_files": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "exists": true,
-                    "title": "Binary Alignment Map Directory (.bam files)",
-                    "description": "Input directory containing .bam files for the description"
-                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
                     "title": "Save Path",
                     "description": "This is the directory where the output gets saved"
+                },
+                "reference_fasta": {
+                    "type": "string",
+                    "title": "Reference fasta file path",
+                    "format": "file-path",
+                    "description": "File path to a fasta reference carrying a single transcript sequence.",
+                    "help_text": "The analysis with Modidec is right now focussing on single transcript sequences only."
                 },
                 "flowcell_type": {
                     "type": "string",
@@ -41,6 +41,16 @@
                     "enum": [
                         "RNA004",
                         "RNA002"
+                    ]
+                },
+                "curation_type": {
+                    "type": "string",
+                    "title": "Curation type",
+                    "default": "Training",
+                    "description": "Select whether you want to use the output data for network training or for data analysis. If you use the Training option the files will be randomly separated into training and validation datasets.",
+                    "enum": [
+                        "Training",
+                        "Analysis"
                     ]
                 }
             }
@@ -71,7 +81,7 @@
                 },
                 "training_out":{
                     "type": "string",
-                    "title": "Training Output Directory",
+                    "title": "Training Output Filename",
                     "default": "modified_data",
                     "description": "Name of the output file"
                 },
@@ -134,15 +144,15 @@
                 },
                 "start_read_num": {
                     "type": "integer",
-                    "title": "Start index on bamfile",
+                    "title": "Choose a start index for read selection",
                     "default":0,
-                    "description": "Select the start entry from the .bam file"
+                    "description": "The start index can be used to control the read selection process."
                 },
                 "end_read_num": {
                     "type": "integer",
-                    "title": "Stop index on bamfile",
+                    "title": "Choose a stop index for read selection",
                     "default":10000,
-                    "description": "Select the end entry from the .bam file"
+                    "description": "The stop index can be used to control the read selection process."
                 }
             }
         }
