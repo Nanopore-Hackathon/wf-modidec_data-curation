@@ -164,7 +164,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
         start_analysis = False
 
         if take_mod_region:
-            print("TAKING MOD REGION")
+            #print("TAKING MOD REGION")
             if high_threshold < val_total_seq and position_adjusting < max(mod_pos_initial) and not Error_read: 
                 start_analysis = True
 
@@ -174,8 +174,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
         
         if start_analysis: # ///////// TO CHECK !!! ////////////
-            Signal_onehot = np.zeros([len(Raw_signal),4 + 1])
-            Output_onehot = np.zeros([len(Raw_signal), labels + 2])
+            Signal_onehot = np.zeros([len(Raw_signal)+1,4 + 1])
+            Output_onehot = np.zeros([len(Raw_signal)+1, labels + 2])
             base_dict_output = { "A":1, "C":1, "G":1, "T":1,"X":{}}
             
             for m_base in Modified_base:
@@ -194,8 +194,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                     seq_resquigle_mod = seq_resquigle
             for m_base, mod_pos_init in zip(Modified_base,mod_pos_initial): 
                 mod_pos = mod_pos_init - position_adjusting - 1
-                for k,base_identitiy in enumerate(seq_resquigle_mod):
-                    if base_identitiy != "X":
+                for k,base_identity in enumerate(seq_resquigle_mod):
+                    if base_identity != "X":
                         start_resq = start_end_resquigle[k]
                         Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
                         Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
@@ -220,6 +220,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                             mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
                         else:
                             mod_position = 0
+                    else:
+                        mod_position = 0
 
                     if take_mod_region:
                         minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)

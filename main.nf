@@ -16,13 +16,12 @@ process Basecalling_and_Alignment {
         path("*.pod5"),includeInputs: true , emit: pod5_files
         path("*.bam"), emit: bam_file
     """
-    dorado basecaller sup ./*.pod5 --emit-moves | samtools fastq -T "*" | minimap2 -y --MD -ax map-ont ${reference_fasta} - | samtools view -b -F 4 > ${training_out}.bam
+    dorado basecaller sup ./ --emit-moves | samtools fastq -T "*" | minimap2 -y --MD -ax map-ont ${reference_fasta} - | samtools view -b -F 4 > ${training_out}.bam
     """
 }
 
 // WorkflowMain.initialise(workflow, params, log)
 process load_kmer_tables {
-
     input:
     val(flowcell_type)
     output:
@@ -40,7 +39,6 @@ process load_kmer_tables {
 }
 
 process Resquiggle_Remora {
-
     label "modidec_dacu"
     publishDir "${params.outdir}/", overwrite: true, mode: 'move'
     stageInMode "symlink"
