@@ -87,20 +87,6 @@ process Resquiggle_Remora {
                 --end_index $end_read_number \
                 \
                 --mod_list $mod_list
-            mkdir -p training_data
-            mkdir -p validation_data
-            total=\$(ls ./*.npz | wc -l)
-            count=\$((\$total * 80 / 100))
-            shuf -e ./*.npz | head -n \$count > filelist.txt
-            for file in \$(cat filelist.txt)
-            do 
-                mv \$file training_data/
-            done
-            for file in \$(ls ./*.npz)
-            do 
-                mv \$file validation_data/
-            done
-            echo "Files for training have been successfully created." > finished.log
         else
             echo "Bamfile for analysis has been successfully created." > finished.log
         fi
