@@ -66,7 +66,7 @@ process Resquiggle_Remora {
         then
             Remora_resquigle_generate_data.py \
                 --base_dir ${baseDir} \
-                --pod5_dir $pod5_files \
+                --pod5_dir ./ \
                 --bam_file $bam_file \
                 --kmer_lvl_table $kmer_lvl_table \
                 \
