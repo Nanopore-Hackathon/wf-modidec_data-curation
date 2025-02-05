@@ -2,6 +2,8 @@
 ModiDeC is a customizable neural network to identify RNA modifications from Oxford Nanopore Technology (ONT) based direct RNA sequencing data. ModiDeC combines LSTM and newly designed inception-res-net blocks for multi-modification-classification. ModiDec is composed of three Epi2ME integratable tools (data curation, network training and analysis). It allows researchers to train the multi-modification-classification model on synthetic RNA strands mimicking physiologically relevant motifs and modification patterns on transcripts of interest. The latter can be utilized to investigate modification ratios of transcripts derived from physiological data. During the data curation step of ModiDec, data derived from ONT based direct RNA sequencing experiments (RNA002 or RNA004) can be preprocessed to suit the succeeding model training step. During model training the network can be trained on the preprocessed data to optimally learn motif and modification patterns of the transcript of interest. The trained model can then be used in the analysis step of ModiDec to investigate modification ratios in physiological derived data.
 
 Here the data curation part is implemented. Please visit [wf-modidec_training](https://github.com/Nanopore-Hackathon/wf-modidec_training) and [wf-modidec_analysis](https://github.com/Nanopore-Hackathon/wf-modidec_analysis) to find the complete toolset. 
+During Data curation the input pod5 files will be bascalled, aligned and preprocessed to create npz files, which can be directly used for training.
+
 
 ## Requirements
 
@@ -40,9 +42,10 @@ Define the following variables:
 
 ### Input Parameters
 1. pod5 folder 
-2. bam files folder 
+2. reference fasta
 3. output directory
-4. flowcell type (RNA002 or RNA004)
+4. flowcell type ("RNA002" or "RNA004")
+5. Curation type ("Training" or "Analysis")
 
 ### Data Parameters
 1. Map a modification on your construct ? (Usually: Yes, Should be also yes if your construct is unmodified. Since the network training will focus on a specific region.)
@@ -67,6 +70,16 @@ Define the following variables:
 After you chose the parameters for data curation click on Launch to start the process.
 
 
+### Data Output
+
+When using Curation Type Training the defined output folder will conatin:
+1. pod5 files
+2. bam files including move table and MD flags
+3. Files in npz format containing tensors for the network training
+
+When using Curation Type Analysis:
+1. pod5 files
+2. bam files including move table and MD flags
 
 
 
