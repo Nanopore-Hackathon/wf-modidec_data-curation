@@ -31,16 +31,9 @@ Import the workflow in Epi2Me:
 ## Instructions for data curation
 
 ### Preparation
-Before you use the data curation step make sure you basecalled your data and in the following align your data to a fasta file contianing only the transcript of interest. Make sure you set all necessary flags.
-Use the following command:
+Before you use the data curation step prepare a reference fasta file containing only a single transcript of interest.
+Navigate to Launch on Epi2Me and click on the wf-modidec_data-curation workflow. Press Launch again and you will be linked to the menu. 
 
-```bash
-dorado basecaller sup path_to_folder/*.pod5 --emit-moves |
-samtools fastq -T "*" | minimap2 -y --MD -ax map-ont path_to_reference/single_trancript_reference.fasta - |
-samtools view -b -F 4 > output_name.bam
-```
-
-Once you finished the alignment the data curation can be performed. Navigate to Launch on Epi2Me and click ont wf-modidec_data-curation.
 Define the following variables:
 
 ### Input Parameters
