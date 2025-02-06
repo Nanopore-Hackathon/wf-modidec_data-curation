@@ -32,7 +32,7 @@ Import the workflow in Epi2Me:
 
 ### Preparation
 Before you use the data curation step prepare a reference fasta file containing only a single transcript of interest.
-Navigate to Launch on Epi2Me and click on the wf-modidec_data-curation workflow. Press Launch again and you will be linked to the menu. 
+Navigate to Launch on Epi2Me and click on the wf-modidec_data-curation workflow. Press Launch on the right side of the page and you will be linked to the menu. 
 
 Define the following variables:
 
