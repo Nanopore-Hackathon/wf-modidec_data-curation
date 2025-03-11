@@ -110,13 +110,13 @@
             "title": "Segmentation Parameters",
             "type": "object",
             "fa_icon": "fas fa-arrow-right",
-            "description": "Advanced parameteres related to data segmentation",
+            "description": "Advanced parameters related to data segmentation",
             "properties" : {
                 "batch_size": {
                     "type": "integer",
-                    "title": "Batch size",
+                    "title": "Training entities saved per output file",
                     "default":16,
-                    "description": "Number of chunks saved per file"
+                    "description": "Number of training entities saved per file in .npz format."
                 },
                 "start_read_num": {
                     "type": "integer",
