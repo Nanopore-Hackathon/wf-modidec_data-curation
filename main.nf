@@ -13,10 +13,11 @@ process Basecalling_and_Alignment {
         path(reference_fasta)
         val(training_out)
     output:
-        path("*.pod5"),includeInputs: true , emit: pod5_files
         path("*.bam"), emit: bam_file
+        path("*.bam.bai")
     """
-    dorado basecaller sup ./ --emit-moves | samtools fastq -T "*" | minimap2 -y --MD -ax map-ont ${reference_fasta} - | samtools view -b -F 4 > ${training_out}.bam
+    dorado basecaller sup ./ --emit-moves | samtools fastq -T "*" | minimap2 -y --MD -ax map-ont ${reference_fasta} - | samtools view -b -F 4 | samtools sort > ${training_out}.bam
+    samtools index ${training_out}.bam
     """
 }
 
@@ -49,10 +50,10 @@ process Resquiggle_Remora {
         path(kmer_lvl_table)
     
         //The General variables for training data
-        tuple val(basecalling), val(mod_mapping), val(modified_data), val(use_modified_region), val(training_out), val(mod_type), val(mod_pos), val(bases_before_mod)
+        tuple val(basecalling), val(mod_mapping), val(modified_data), val(training_out), val(mod_type), val(mod_pos), val(bases_before_mod)
         
         //The Segmentation variables for training data
-        tuple val(batch_size), val(max_seq_length), val(chunk_length), val(time_shift), val(start_read_number), val(end_read_number)
+        tuple val(batch_size), val(start_read_number), val(end_read_number)
         val(mod_list)
 
         val(curation_type)
@@ -73,16 +74,12 @@ process Resquiggle_Remora {
                 --basecalling $basecalling \
                 --mod_mapping $mod_mapping \
                 --modified_data $modified_data \
-                --take_mod_region $use_modified_region \
                 --name_save_file $training_out \
                 --modified_base $mod_type \
                 --mod_pos_initial $mod_pos \
                 --start_base_resquigle $bases_before_mod \
                 \
                 --batch_size $batch_size \
-                --max_label_length $max_seq_length \
-                --time_segment $chunk_length \
-                --shift $time_shift \
                 --start_index $start_read_number \
                 --end_index $end_read_number \
                 \
@@ -103,9 +100,9 @@ workflow {
     
     kmer_table = load_kmer_tables(params.flowcell_type)
     basecalling_and_alignment = Basecalling_and_Alignment(file("$params.pod5_files/*.pod5"), file(params.reference_fasta),params.training_out)
-    Resquiggle_Remora(basecalling_and_alignment.pod5_files, basecalling_and_alignment.bam_file, kmer_table.kmer_lvl_table,
-    tuple(params.basecalling, params.mod_mapping, params.modified_data, params.use_modified_region, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
-    tuple(params.batch_size, params.max_seq_length, params.chunk_length, params.time_shift, params.start_read_num, params.end_read_num),
+    Resquiggle_Remora(file("$params.pod5_files/*.pod5"), basecalling_and_alignment.bam_file, kmer_table.kmer_lvl_table,
+    tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+    tuple(params.batch_size, params.start_read_num, params.end_read_num),
     params.mod_list, params.curation_type)
 }
 

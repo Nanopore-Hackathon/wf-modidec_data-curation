@@ -8,6 +8,8 @@ from remora import io , refine_signal_map, util
 import os
 import numpy as np
 import argparse
+import math
+import polars as pl
 
 def argparser():
     parser = argparse.ArgumentParser(description="Parser for pod5Viewer input parameters")
@@ -21,16 +23,12 @@ def argparser():
     parser.add_argument("--basecalling", required=True)
     parser.add_argument("--mod_mapping", required=True)
     parser.add_argument("--modified_data", required=True)
-    parser.add_argument("--take_mod_region", required=True)
     parser.add_argument("--name_save_file", required=True, type=str)
     parser.add_argument("--modified_base", required=True, nargs="+")
     parser.add_argument("--mod_pos_initial", required=True, nargs="+", type = int)
     parser.add_argument("--start_base_resquigle", required=True, type=int)
 
     parser.add_argument("--batch_size", required=True, type=int)
-    parser.add_argument("--max_label_length", required=True, type=int)
-    parser.add_argument("--time_segment", required=True, type=int)
-    parser.add_argument("--shift", required=True, type=int)
     parser.add_argument("--start_index", required=True, type=int)
     parser.add_argument("--end_index", required=True, type=int)
 
@@ -39,23 +37,9 @@ def argparser():
     return parser
 
 def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_file, save_path, \
-    basecalling, mod_mapping, modified_data, take_mod_region, name_save_file, Modified_base, \
-    mod_pos_initial, start_base_resquigle, batch_size, max_label_length, time_segment, shift, \
+    basecalling, mod_mapping, modified_data, name_save_file, Modified_base, \
+    mod_pos_initial, start_base_resquigle, batch_size, \
     start_index, end_index, mod_list):
-
-    #print(bam_file)
-    #initial variable
-    # print("Basecalling")
-    # print(basecalling)
-    # print(type(basecalling))
-    
-    # print("Mod mapping")
-    # print(mod_mapping)
-    # print(type(mod_mapping))
-    
-    # print("Modified data")
-    # print(modified_data)
-    # print(type(modified_data))
 
     if basecalling == "true":
         basecalling = 1
@@ -72,11 +56,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     else:
         modified_data = 0
         
-    if take_mod_region == "true":
-        take_mod_region = 1
-    else:
-        take_mod_region = 0
-
 
     # /////// read the files //////
 
@@ -90,12 +69,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
         # /// define the function for resquile from Remora ///
         # // old version used for DNA. maybe DNA data has to be analysed again //
 
-    # if level_table_file == "4":
-    #     level_table_file = base_dir + "/data/5mer_levels_v1.txt"
-    # else:
-    #     level_table_file = base_dir + "/data/9mer_levels_v1.txt"
-
-    #print(level_table_file)
     level_table_file = level_table_file
 
     sig_map_refiner = refine_signal_map.SigMapRefiner(
@@ -107,6 +80,17 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
     labels = len(mod_list)
 
     old_start = start_index
+    training_data_to_save_list = {"read_id":[],
+                                  "modified_data":[],
+                                  "modification_type_if_modified":[],
+                                  "start_index_on_original_signal":[],
+                                  "end_index_on_original_signal":[],
+                                  "raw_signal": [],
+                                  "one_hot_encoded_base_sequence":[],
+                                  "one_hot_encoded_modification_dictionairy":[],
+                                  "reference_bam_file":[],
+                                  "pod5_directory":[]
+                                  }
     
     for name_id in read_id[old_start: end_index]: 
 
@@ -163,8 +147,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
 
         start_analysis = False
 
-        if take_mod_region:
-            #print("TAKING MOD REGION")
+        if mod_mapping:
             if high_threshold < val_total_seq and position_adjusting < max(mod_pos_initial) and not Error_read: 
                 start_analysis = True
 
@@ -181,7 +164,6 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
             for m_base in Modified_base:
                 if mod_mapping:
                     value_modification = int(mod_list.index(m_base)) + 2
-                    # variable
                     base_dict_output["X"][m_base] = value_modification
                 
             base_dict = {"A":1, "C":2, "G":3, "T":4}
@@ -211,41 +193,39 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                 try:
                     if mod_mapping and modified_data:
                         mod_position = np.where(Output_onehot[:,base_dict_output["X"][m_base]] > 0)[0][modification_counter[m_base]]
-                        print(mod_position, type(mod_position))
-                        #mod_position = np.where(Output_onehot[:1,:] > 0)[0][modification_index]
                         modification_counter[m_base] += 1 
                             
                     if mod_mapping and not modified_data:
-                        if take_mod_region:
-                            mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
-                        else:
-                            mod_position = 0
-                    else:
+                        mod_position = np.where(Output_onehot[:,1] > 0)[0][mod_pos]
+                        
+                    if not mod_mapping and not modified_data:
                         mod_position = 0
-
-                    if take_mod_region:
+                    
+                    if not mod_mapping and modified_data:
+                        mod_position = 0
+                        
+                    if mod_mapping:
                         minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
-                        N_shift = int((time_segment + minus_start)/shift)
+                        N_shift = int((400 + minus_start)/25)
                     else:
-                        N_shift = int((len(Raw_signal) - time_segment)/shift)
+                        N_shift = int((len(Raw_signal) - 400)/25)
+                    for n in range(int(N_shift/16)):
+                        train1_batch = np.zeros([16, 400])
+                        train2_batch = np.zeros([16, 40, 4])
+                        output_batch = np.zeros([16, 40, 1 + labels])
 
-                    for n in range(int(N_shift/batch_size)):
-                        train1_batch = np.zeros([batch_size, time_segment])
-                        train2_batch = np.zeros([batch_size, max_label_length, 4])
-                        output_batch = np.zeros([batch_size, max_label_length, 1 + labels])
-
-                        for m in range(batch_size):
-                            if take_mod_region:
+                        for m in range(16):
+                            if mod_mapping:
                                 middle_mod_position = mod_position #+ int(0.5*np.abs(start_end_resquigle[mod_pos + 1] - start_end_resquigle[mod_pos]))
-                                start = middle_mod_position - n*batch_size*shift - m*shift
-                                end = start + time_segment
+                                start = middle_mod_position - n*16*25 - m*25
+                                end = start + 400
 
                             else:
-                                start = n*batch_size*shift + m*shift
-                                end = start + time_segment
+                                start = n*16*25 + m*25
+                                end = start + 400
 
-                            output_for_batch = np.zeros([max_label_length,1 + labels])
-                            train2_for_batch = np.zeros([max_label_length,4])
+                            output_for_batch = np.zeros([40,1 + labels])
+                            train2_for_batch = np.zeros([40,4])
 
                                     # // here I am using a trick. All the bases has no zero value
                                     # making again the one-hot into an array and removing the 0 values,
@@ -267,7 +247,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                     output_for_batch[kk, probe_2[kk]] = 1
 
                             except:
-                                for kk in range(max_label_length):                                
+                                for kk in range(40):                                
                                     train2_for_batch[kk, probe_1[kk]] = 1
                                     output_for_batch[kk, probe_2[kk]] = 1
 
@@ -278,15 +258,20 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 train1_batch[m] = Raw_signal[start:end]
                                 train2_batch[m] = train2_for_batch
                                 output_batch[m] = output_for_batch
+                                
+                                training_data_to_save_list["read_id"].append(name_id)
+                                training_data_to_save_list["raw_signal"].append(train1_batch[m])
+                                training_data_to_save_list["one_hot_encoded_base_sequence"].append(train2_batch[m])
+                                training_data_to_save_list["one_hot_encoded_modification_dictionairy"].append(output_batch[m])
 
                             except:
-                                if mod_position < int(time_segment/2):                            
+                                if mod_position < int(400/2):                            
                                     start = mod_position
-                                    end = start + time_segment
+                                    end = start + 400
 
                                 else:     
-                                    start = mod_position - int(time_segment/2)
-                                    end = start + time_segment
+                                    start = mod_position - int(400/2)
+                                    end = start + 400
 
                                 probe_1 = np.argmax(Signal_onehot[start:end,:], axis = -1)
                                 probe_1 = probe_1[probe_1 != 0]
@@ -304,7 +289,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                         output_for_batch[kk, probe_2[kk]] = 1
 
                                 except:
-                                    for kk in range(max_label_length):
+                                    for kk in range(40):
                                                 
                                         train2_for_batch[kk, probe_1[kk]] = 1
                                         output_for_batch[kk, probe_2[kk]] = 1
@@ -312,24 +297,27 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                                 train1_batch[m] = Raw_signal[start:end]
                                 train2_batch[m] = train2_for_batch
                                 output_batch[m] = output_for_batch
-                        modified_bases_string = ""
-                        if modified_data:
-                            for temp_base in Modified_base:
-                                modified_bases_string += f"{temp_base}_"
-                        else:
-                            modified_bases_string = "unmodified"
-                        file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{int(start_index)}_{n}_{modified_bases_string}_focus_{m_base}.npz"
-                        np.savez_compressed(file_name, train_input = train1_batch,train_input2 = train2_batch, train_output = output_batch)                                                            
+                                
+                                training_data_to_save_list["read_id"].append(name_id)
+                                training_data_to_save_list["raw_signal"].append(train1_batch[m])
+                                training_data_to_save_list["one_hot_encoded_base_sequence"].append(train2_batch[m])
+                                training_data_to_save_list["one_hot_encoded_modification_dictionairy"].append(output_batch[m])                                                        
                 except Exception as e:
                     print("resquiggle error")
                     print(e)   
-    print("Resquiggleing Finished")
-
+                    continue
+    for batch_index in range(math.floor(len(training_data_to_save_list["read_id"])/batch_size)): 
+        file_name = f"{os.path.basename(bam_file).split('.bam')[0]}_{batch_index}.npz"
+        start_index=batch_index*batch_size
+        end_index=(batch_index+1)*batch_size
+        np.savez_compressed(file_name, train_input = training_data_to_save_list["raw_signal"][start_index:end_index],train_input2 = training_data_to_save_list["one_hot_encoded_base_sequence"][start_index:end_index], train_output = training_data_to_save_list["one_hot_encoded_modification_dictionairy"][start_index:end_index])
+    print(f"Produced entities: {len(training_data_to_save_list['read_id'])}")
+    print(f"Produced batches: {math.ceil(len(training_data_to_save_list['read_id'])/batch_size)}")
+    
 if __name__ == "__main__":
-
     args = argparser().parse_args()
     print(args)
     Remora_resquigle_Generation_data(args.base_dir, args.pod5_dir, args.bam_file, args.kmer_lvl_table, "output", \
-        args.basecalling, args.mod_mapping, args.modified_data, args.take_mod_region, args.name_save_file, args.modified_base, \
-        args.mod_pos_initial, args.start_base_resquigle, args.batch_size, args.max_label_length, args.time_segment, args.shift, \
+        args.basecalling, args.mod_mapping, args.modified_data, args.name_save_file, args.modified_base, \
+        args.mod_pos_initial, args.start_base_resquigle, args.batch_size, \
         args.start_index, args.end_index, args.mod_list)

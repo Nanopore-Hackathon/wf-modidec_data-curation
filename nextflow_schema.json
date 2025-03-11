@@ -65,19 +65,13 @@
                     "type": "boolean",
                     "title": "Modification Mapping",
                     "default": true,
-                    "description": "Map modifications in your reads"
+                    "description": "Will create chunks around modification position"
                 },
                 "modified_data": {
                     "type": "boolean",
                     "default": true,
                     "title": "Modified Data",
                     "description": "Do the reads contain modified bases or not?"
-                },
-                "use_modified_region": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "Use Modified Region",
-                    "description": "Will create chunks around modification position"
                 },
                 "training_out":{
                     "type": "string",
@@ -106,8 +100,8 @@
                 "bases_before_mod": {
                     "type": "integer",
                     "title": "Number of Bases before Modification",
-                    "description": "If you want you can take more bases to the left or right from your modification position",
-                    "default": 0,
+                    "description": "Include signal a few bases upstream to the modification start",
+                    "default": 5,
                     "maximum": 11
                 }
             }
@@ -123,24 +117,6 @@
                     "title": "Batch size",
                     "default":16,
                     "description": "Number of chunks saved per file"
-                },
-                "max_seq_length": {
-                    "type": "integer",
-                    "title": "Maximum sequence length",
-                    "default":40,
-                    "description": "Maximum number of base that a chunk can have"
-                },
-                "chunk_length": {
-                    "type": "integer",
-                    "title": "Number of chunks",
-                    "default":400,
-                    "description": "Defines how many timepoints to inlude within a sliding window"
-                },
-                "time_shift": {
-                    "type": "integer",
-                    "title": "Time shift",
-                    "default":25,
-                    "description": "How many timepoint to shift your sliding window to create a new represntation of the modification chunk"
                 },
                 "start_read_num": {
                     "type": "integer",
