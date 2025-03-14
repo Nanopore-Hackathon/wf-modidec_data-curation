@@ -99,11 +99,19 @@ workflow {
     //bam_files_ch = Channel.fromPath("${params.bam_files}/*.bam")
     
     kmer_table = load_kmer_tables(params.flowcell_type)
-    basecalling_and_alignment = Basecalling_and_Alignment(file("$params.pod5_files/*.pod5"), file(params.reference_fasta),params.training_out)
-    Resquiggle_Remora(file("$params.pod5_files/*.pod5"), basecalling_and_alignment.bam_file, kmer_table.kmer_lvl_table,
-    tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
-    tuple(params.batch_size, params.start_read_num, params.end_read_num),
-    params.mod_list, params.curation_type)
+    if (params.basecalling){
+        basecalling_and_alignment = Basecalling_and_Alignment(file("$params.pod5_files/*.pod5"), file(params.reference_fasta),params.training_out)
+        Resquiggle_Remora(file("$params.pod5_files/*.pod5"), basecalling_and_alignment.bam_file, kmer_table.kmer_lvl_table,
+        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+        tuple(params.batch_size, params.start_read_num, params.end_read_num),
+        params.mod_list, params.curation_type)
+    }
+    else{
+        Resquiggle_Remora(file("$params.pod5_files/*.pod5"), file("$params.bam_file"), kmer_table.kmer_lvl_table,
+        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+        tuple(params.batch_size, params.start_read_num, params.end_read_num),
+        params.mod_list, params.curation_type)
+    }
 }
 
 workflow.onError {

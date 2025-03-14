@@ -13,12 +13,25 @@
             "description": "Mandatory Parameters to start the resquiggle analysis",
             "required": ["pod5_files", "outdir", "flowcell_type","reference_fasta"],
             "properties": {
+                "basecalling": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Run Basecalling",
+                    "description": "Do you want to run basecalling + alignment?"
+                },
                 "pod5_files": {
                     "type": "string",
                     "format": "directory-path",
                     "exists": true,
                     "title": "Raw Data Directory (.pod5 files)",
                     "description": "Input directory containing .pod5 files"
+                },
+                "bam_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "title": "Input BAM file",
+                    "description": "Path to input bam file. Bam files must be aligned to reference and contain move table and MD flags. You only need to provide a Bam file if Basecalling is not selected."
                 },
                 "outdir": {
                     "type": "string",
