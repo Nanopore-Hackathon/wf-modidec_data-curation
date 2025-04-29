@@ -7,7 +7,7 @@ nextflow.enable.dsl=2
 process Basecalling_and_Alignment {
     label "dorado_basecaller"
     publishDir "${params.outdir}/", overwrite: true, mode: 'copy'
-    stageInMode "copy"
+    stageInMode "symlink"
     input:
         path(pod5_files)
         path(reference_fasta)
