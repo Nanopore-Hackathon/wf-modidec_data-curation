@@ -181,6 +181,8 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                         start_resq = start_end_resquigle[k]
                         Signal_onehot[start_resq,base_dict[seq_resquigle[k]]] = 1
                         Output_onehot[start_resq,base_dict_output[seq_resquigle_mod[k]]] = 1
+                if not modified_data:
+                    mod_pos = 0
                 if seq_resquigle_mod[mod_pos] == "X":
                     start_resq = start_end_resquigle[mod_pos]
                     Signal_onehot[start_resq,base_dict[seq_resquigle[mod_pos]]] = 1
