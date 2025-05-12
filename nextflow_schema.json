@@ -122,7 +122,18 @@
                     "type": "integer",
                     "title": "Training entities saved per output file",
                     "default":16,
-                    "description": "Number of training entities saved per file in .npz format."
+                    "description": "Number of training entities saved per file in .npz format.",
+                    "enum": [
+                        16,
+                        32,
+                        64,
+                        128,
+                        256,
+                        512,
+                        1024,
+                        2048,
+                        4096
+                    ]
                 },
                 "start_read_num": {
                     "type": "integer",
