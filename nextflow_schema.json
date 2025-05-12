@@ -106,9 +106,9 @@
                 },
               	"mod_pos": {
                     "type": "string",
-                    "title": "Region of interest",
+                    "title": "Positions of interest",
                     "default":"0",
-                    "description": "Region of interest of which you want retrieve curated data Use a space separated string to indicate the modifications are located on the template. (e.g. 92 93 94) These positions correspond to the order of modifications defined in Modification Type."
+                    "description": "Positions of interest of which you want retrieve curated data. Use a space separated string to indicate several modifications are located on the template. (e.g. 92 93 94) These positions correspond to the order of modifications defined in 'Modification Type'."
                 }
             }
         },
