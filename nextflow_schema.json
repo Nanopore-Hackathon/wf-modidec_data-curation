@@ -96,7 +96,7 @@
                     "type": "string",
                     "title": "Modification Dictionary",
                     "default": "Gm m6A Ino Psi",
-                    "description": "A dictionary with the modification information, alternative basenames for modified bases with default: Gm, m6A, Ino, Psi"
+                    "description": "A dictionary defining all different types of modifications introduced during the training process, alternative basenames for modified bases with default: Gm, m6A, Ino, Psi"
                 },
                 "mod_type": {
                     "type": "string",
@@ -106,9 +106,9 @@
                 },
               	"mod_pos": {
                     "type": "string",
-                    "title": "Location of Modification",
-                    "default":"92",
-                    "description": "Position of the modification in the reference sequence. Use a space separated string to indicate where the modifications from above are located (e.g. 92 93 94)"
+                    "title": "Region of interest",
+                    "default":"0",
+                    "description": "Region of interest of which you want retrieve curated data Use a space separated string to indicate the modifications are located on the template. (e.g. 92 93 94) These positions correspond to the order of modifications defined in Modification Type."
                 }
             }
         },
