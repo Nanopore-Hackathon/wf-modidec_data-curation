@@ -51,7 +51,7 @@ Define the following variables:
 3. Which name should your output files have ? (Variable: Training Output Directory)
 4. Define a modification dictionairy: (Variable: Modification Dictionary, Default -> "Gm m6A Ino Psi", This dictionairy defines the different types of modifications introduced during training and should be the same for all training instances the model will be trained with.)
 5. Define which modification your construct carries. (Variable: Modification Type, Default: "Gm", Can be extended to use several bases e.g. "Gm Gm m6A Ino", If you have unmodified data you should still mention the modification type of your modification you are comparing the data to.)
-6. At which position on your reference transcript is the modification position or what is the region of interest in the unmodified data ? (Variable: Location of Modification,Default: "92", Can be extended to match the position of the modified bases above e.g "92 93 100 101",If you have unmodified data you should still mention the positions of modified bases in your modified data to extract data from similar positions.)
+6. Position of interest on your reference template ? (Variable: Position of interest , Default: "0" , Can be extended to match the position of the modified bases above e.g "92 93 100 101",If you have unmodified data you should still mention the positions of modified bases in your modified data to extract data from similar positions.)
 
 
 ### Segmentation Parameters
