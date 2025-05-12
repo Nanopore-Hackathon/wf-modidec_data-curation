@@ -37,29 +37,26 @@ Navigate to Launch on Epi2Me and click on the wf-modidec_data-curation workflow.
 Define the following variables:
 
 ### Input Parameters
-1. pod5 folder 
-2. reference fasta
-3. output directory
-4. flowcell type ("RNA002" or "RNA004")
-5. Curation type ("Training" or "Analysis")
+1. Do you want to run basecalling + alignment ? (Usually only needed if the data hasnt been basecalled and aligned to the template of interest before)
+2. Pod5 folder
+3. Bam file (Only necessary if basecalling + alignemnt has already been performed.) 
+3. Reference fasta
+4. Output directory
+5. Flowcell type ("RNA002" or "RNA004")
+6. Curation type ("Training" or "Analysis")
 
 ### Data Parameters
-1. Map a modification on your construct ? (Usually: Yes, Should be also yes if your construct is unmodified. Since the network training will focus on a specific region.)
+1. Map the modification / region of interest on your construct ? (Usually: Yes, Should be also yes if your construct is unmodified. Since the curation procss will focus on the region of interest in that case.)
 2. Is your construct modified ?
-3. Do you want to use the modified region for data training ? (Usually: Yes. Will create data chunks around the region of interest)
-4. Which name should your output files have ? (Variable: Training Output Directory)
-5. Define a modification dictionairy: (Variable: Modification Dictionary, Default -> "Gm m6A Ino Psi", This dictionairy defines the multiple modicifaction classification space and should be the same for all training instances the model will be trained with.)
-6. Define which modification your construct carries. (Variable: Modification Type, Default: "Gm", Can be extended to use several bases e.g. "Gm Gm m6A Ino", If you have unmodified data you should still mention the modification type of your modified data to extract data from similar positions.)
-7. At which position on your reference transcript is the modification positioned ? (Variable: Location of Modification,Default: "92", Can be extended to match the position of the modified bases above e.g "92 93 100 101",If you have unmodified data you should still mention the positions of modified bases in your modified data to extract data from similar positions.)
-8. Do you want to add some chunks around you modification position to create some unmodified examples in the sorroundings ? (Variable: Number of Bases before Modification) 
+3. Which name should your output files have ? (Variable: Training Output Directory)
+4. Define a modification dictionairy: (Variable: Modification Dictionary, Default -> "Gm m6A Ino Psi", This dictionairy defines the different types of modifications introduced during training and should be the same for all training instances the model will be trained with.)
+5. Define which modification your construct carries. (Variable: Modification Type, Default: "Gm", Can be extended to use several bases e.g. "Gm Gm m6A Ino", If you have unmodified data you should still mention the modification type of your modification you are comparing the data to.)
+6. At which position on your reference transcript is the modification position or what is the region of interest in the unmodified data ? (Variable: Location of Modification,Default: "92", Can be extended to match the position of the modified bases above e.g "92 93 100 101",If you have unmodified data you should still mention the positions of modified bases in your modified data to extract data from similar positions.)
 
 
 ### Segmentation Parameters
 1. How many chunks should be included into a single output file in .npz format? (Variable: Batch size, Default: 16)
-2. How many bases at maximum should a single datachunk cover on your reference transcript ? (Variable: Maximum sequence length, Default: 40)
-3. What is the chunksize (current measurements over time) of the networks receptive field/sliding window? (Variable: Number of chunks, Default: 400)
-4. In which range should the sliding window move over the data ? (Variable: Time shift, Default: 25)
-5. Which bamfile entries should be taken ? This options enbales the user to extract a resonable amount of training data for a given construct.
+2. Which bamfile entries should be taken ? This options enbales the user to extract a resonable amount of training data for a given construct.
    - Define start index on bamfile (Variable: Start index on bamfile, Default: 0)
    - Define end index on bamfile (Variable: End index on bamfile, Default: 10000)
   
