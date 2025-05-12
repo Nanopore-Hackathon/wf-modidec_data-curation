@@ -100,9 +100,9 @@
                 },
                 "mod_type": {
                     "type": "string",
-                    "title": "Modification Type",
+                    "title": "Modification TypeS",
                     "default": "Gm",
-                    "description": "Choose a key according to the modification dictionary indicating your modification type. If you have several modifications you can use a space separated string (e.g. Gm Ino m6A)."
+                    "description": "Choose a key according to the 'Modification dictionary' indicating your modification type. If you have several modifications you can use a space separated string (e.g. Gm Ino m6A)."
                 },
               	"mod_pos": {
                     "type": "string",
