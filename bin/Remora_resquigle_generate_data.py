@@ -26,7 +26,6 @@ def argparser():
     parser.add_argument("--name_save_file", required=True, type=str)
     parser.add_argument("--modified_base", required=True, nargs="+")
     parser.add_argument("--mod_pos_initial", required=True, nargs="+", type = int)
-    parser.add_argument("--start_base_resquigle", required=True, type=int)
 
     parser.add_argument("--batch_size", required=True, type=int)
     parser.add_argument("--start_index", required=True, type=int)
@@ -38,7 +37,7 @@ def argparser():
 
 def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_file, save_path, \
     basecalling, mod_mapping, modified_data, name_save_file, Modified_base, \
-    mod_pos_initial, start_base_resquigle, batch_size, \
+    mod_pos_initial, batch_size, \
     start_index, end_index, mod_list):
 
     if basecalling == "true":
@@ -207,7 +206,7 @@ def Remora_resquigle_Generation_data(base_dir, data_path, bam_file, level_table_
                         mod_position = 0
                         
                     if mod_mapping:
-                        minus_start = np.abs(start_end_resquigle[mod_pos - start_base_resquigle] - mod_position)
+                        minus_start = np.abs(start_end_resquigle[mod_pos] - mod_position)
                         N_shift = int((400 + minus_start)/25)
                     else:
                         N_shift = int((len(Raw_signal) - 400)/25)
@@ -321,5 +320,5 @@ if __name__ == "__main__":
     print(args)
     Remora_resquigle_Generation_data(args.base_dir, args.pod5_dir, args.bam_file, args.kmer_lvl_table, "output", \
         args.basecalling, args.mod_mapping, args.modified_data, args.name_save_file, args.modified_base, \
-        args.mod_pos_initial, args.start_base_resquigle, args.batch_size, \
+        args.mod_pos_initial, args.batch_size, \
         args.start_index, args.end_index, args.mod_list)

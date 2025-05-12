@@ -50,7 +50,7 @@ process Resquiggle_Remora {
         path(kmer_lvl_table)
     
         //The General variables for training data
-        tuple val(basecalling), val(mod_mapping), val(modified_data), val(training_out), val(mod_type), val(mod_pos), val(bases_before_mod)
+        tuple val(basecalling), val(mod_mapping), val(modified_data), val(training_out), val(mod_type), val(mod_pos)
         
         //The Segmentation variables for training data
         tuple val(batch_size), val(start_read_number), val(end_read_number)
@@ -77,7 +77,6 @@ process Resquiggle_Remora {
                 --name_save_file $training_out \
                 --modified_base $mod_type \
                 --mod_pos_initial $mod_pos \
-                --start_base_resquigle $bases_before_mod \
                 \
                 --batch_size $batch_size \
                 --start_index $start_read_number \
@@ -102,13 +101,13 @@ workflow {
     if (params.basecalling){
         basecalling_and_alignment = Basecalling_and_Alignment(file("$params.pod5_files/*.pod5"), file(params.reference_fasta),params.training_out)
         Resquiggle_Remora(file("$params.pod5_files/*.pod5"), basecalling_and_alignment.bam_file, kmer_table.kmer_lvl_table,
-        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos),
         tuple(params.batch_size, params.start_read_num, params.end_read_num),
         params.mod_list, params.curation_type)
     }
     else{
         Resquiggle_Remora(file("$params.pod5_files/*.pod5"), file("$params.bam_file"), kmer_table.kmer_lvl_table,
-        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos, params.bases_before_mod),
+        tuple(params.basecalling, params.mod_mapping, params.modified_data, params.training_out, params.mod_type, params.mod_pos),
         tuple(params.batch_size, params.start_read_num, params.end_read_num),
         params.mod_list, params.curation_type)
     }

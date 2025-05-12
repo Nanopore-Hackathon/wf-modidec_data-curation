@@ -109,13 +109,6 @@
                     "title": "Location of Modification",
                     "default":"92",
                     "description": "Position of the modification in the reference sequence. Use a space separated string to indicate where the modifications from above are located (e.g. 92 93 94)"
-                },
-                "bases_before_mod": {
-                    "type": "integer",
-                    "title": "Number of Bases before Modification",
-                    "description": "Include signal a few bases upstream to the modification start",
-                    "default": 5,
-                    "maximum": 11
                 }
             }
         },
