@@ -1,0 +1,175 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",    
+    "title": "wf-modidec_data-curation",
+    "description": "Nextflow workflow for running Modidec.",
+    "url": "https://github.com/nanopore-hackathon/wf-modidec",
+    "type": "object",
+    "definitions": {
+        "Input": {
+            "title": "Input Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Mandatory Parameters to start the resquiggle analysis",
+            "required": ["pod5_files", "outdir", "flowcell_type","reference_fasta"],
+            "properties": {
+                "basecalling": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Run Basecalling",
+                    "description": "Do you want to run basecalling + alignment?"
+                },
+                "pod5_files": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "exists": true,
+                    "title": "Raw Data Directory (.pod5 files)",
+                    "description": "Input directory containing .pod5 files"
+                },
+                "bam_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "title": "Input BAM file",
+                    "description": "Path to input bam file. Bam files must be aligned to reference and contain move table and MD flags. You only need to provide a Bam file if Basecalling is not selected."
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "title": "Save Path",
+                    "description": "This is the directory where the output gets saved"
+                },
+                "reference_fasta": {
+                    "type": "string",
+                    "title": "Reference fasta file path",
+                    "format": "file-path",
+                    "description": "File path to a fasta reference carrying a single transcript sequence.",
+                    "help_text": "The analysis with Modidec is right now focussing on single transcript sequences only."
+                },
+                "flowcell_type": {
+                    "type": "string",
+                    "title": "Flowcell Type",
+                    "default": "RNA004",
+                    "description": "Select the RNA flowcell type you have generated your data with",
+                    "enum": [
+                        "RNA004",
+                        "RNA002"
+                    ]
+                },
+                "curation_type": {
+                    "type": "string",
+                    "title": "Curation type",
+                    "default": "Training",
+                    "description": "Select whether you want to use the output data for network training or for data analysis. If you use the Training option the files will be randomly separated into training and validation datasets.",
+                    "enum": [
+                        "Training",
+                        "Analysis"
+                    ]
+                }
+            }
+        },
+        "Training_Data": {
+            "title": "Data Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Detailed Options Relevant to Training",
+            "properties": {
+                "mod_mapping": {
+                    "type": "boolean",
+                    "title": "Modification Mapping",
+                    "default": true,
+                    "description": "Will create chunks around modification position"
+                },
+                "modified_data": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Modified Data",
+                    "description": "Do the reads contain modified bases or not?"
+                },
+                "training_out":{
+                    "type": "string",
+                    "title": "Training Output Filename",
+                    "default": "modified_data",
+                    "description": "Name of the output file"
+                },
+                "mod_list": {
+                    "type": "string",
+                    "title": "Modification Dictionary",
+                    "default": "Gm m6A Ino Psi",
+                    "description": "A dictionary defining all different types of modifications introduced during the training process, alternative basenames for modified bases with default: Gm, m6A, Ino, Psi"
+                },
+                "mod_type": {
+                    "type": "string",
+                    "title": "Modification Types",
+                    "default": "Gm",
+                    "description": "Choose a key according to the 'Modification dictionary' indicating your modification type. If you have several modifications you can use a space separated string (e.g. Gm Ino m6A)."
+                },
+              	"mod_pos": {
+                    "type": "string",
+                    "title": "Positions of interest",
+                    "default":"0",
+                    "description": "Positions of interest of which you want retrieve curated data. Use a space separated string to indicate several modifications are located on the template. (e.g. 92 93 94) These positions correspond to the order of modifications defined in 'Modification Type'."
+                }
+            }
+        },
+        "Segmentation_Params": {
+            "title": "Segmentation Parameters",
+            "type": "object",
+            "fa_icon": "fas fa-arrow-right",
+            "description": "Advanced parameters related to data segmentation",
+            "properties" : {
+                "batch_size": {
+                    "type": "integer",
+                    "title": "Training entities saved per output file",
+                    "default":16,
+                    "description": "Number of training entities saved per file in .npz format.",
+                    "enum": [
+                        16,
+                        32,
+                        64,
+                        128,
+                        256,
+                        512,
+                        1024,
+                        2048,
+                        4096
+                    ]
+                },
+                "start_read_num": {
+                    "type": "integer",
+                    "title": "Choose a start index for read selection",
+                    "default":0,
+                    "description": "The start index can be used to control the read selection process."
+                },
+                "end_read_num": {
+                    "type": "integer",
+                    "title": "Choose a stop index for read selection",
+                    "default":10000,
+                    "description": "The stop index can be used to control the read selection process."
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/Input"
+        },
+        {
+            "$ref": "#/definitions/Training_Data"
+        },
+        {
+            "$ref": "#/definitions/Segmentation_Params"
+        }
+    ],
+    "resources": {
+        "recommended": {
+            "cpus": 2,
+            "memory": "10GB"
+        },
+        "minimum": {
+            "cpus": 2,
+            "memory": "4GB"
+        },
+        "run_time": "Depends on Sequencing Size"
+    }
+}
