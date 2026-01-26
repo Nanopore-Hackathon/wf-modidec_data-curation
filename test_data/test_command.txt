@@ -1,1 +1,0 @@
-nextflow run ./main.nf --pod5_files ../wf-modidec_data-curation/test_data/pod5/ --bam_files ../wf-modidec_data-curation/test_data/bam/
